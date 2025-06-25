@@ -1,130 +1,216 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Strike Point LPS Reporting Tool</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; background: #f4f4f4; }
-    h1, h2 { text-align: center; }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input, textarea, select, button { width: 100%; margin-top: 5px; padding: 8px; font-size: 14px; }
-    .section { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .fault-item { display: flex; align-items: center; margin-bottom: 10px; }
-    .fault-item label { margin-left: 8px; flex: 1; }
-    .details { margin-left: 28px; margin-top: 5px; display: none; }
-    .footer-text { font-size: 8px; text-align: center; white-space: pre-wrap; margin-top: 40px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+      background-color: #f8f9fa;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    label, select, input, textarea, button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .fault-block {
+      border-top: 1px solid #ccc;
+      padding-top: 15px;
+      margin-top: 20px;
+    }
+
+    footer {
+      font-size: 8px;
+      text-align: center;
+      margin-top: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
+    }
+
+    .logo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      height: 60px;
+    }
   </style>
 </head>
 <body>
   <h1>LPS Inspection Report Tool</h1>
+
   <div class="section">
-    <label>Site Address:</label><input id="site" type="text" />
-    <label>Engineer Name:</label><input id="engineer" type="text" />
-    <label>Inspection Date:</label><input id="date" type="date" />
-    <label>Test Kit Number:</label><input id="kit" type="text" />
-    <label>Building/Block Reference:</label><input id="building" type="text" />
-    <label>Weather & Ground Moisture:</label><input id="weather" type="text" />
-    <label>Standard Tested To:</label>
-    <select id="standard" onchange="renderFaults()">
+    <label for="siteAddress">Site Address:</label>
+    <input type="text" id="siteAddress" placeholder="Enter address" />
+
+    <label for="engineer">Engineer Name:</label>
+    <input type="text" id="engineer" />
+
+    <label for="testKit">Test Kit Number:</label>
+    <input type="text" id="testKit" />
+
+    <label for="buildingRef">Building/Block Reference:</label>
+    <input type="text" id="buildingRef" />
+
+    <label for="date">Inspection Date:</label>
+    <input type="date" id="date" />
+
+    <label for="weather">Weather & Ground Moisture:</label>
+    <input type="text" id="weather" />
+  </div>
+
+  <div class="section">
+    <label for="standard">Select Standard:</label>
+    <select id="standard" onchange="loadFaults()">
       <option value="">-- Select --</option>
-      <option value="BSEN62305">BS EN 62305</option>
-      <option value="BS6651">BS 6651</option>
-      <option value="NFC17102">NF C 17-102:2011</option>
-      <option value="CP326">CP326:1965</option>
+      <option value="BSEN62305">BSEN62305</option>
+      <option value="BS6651">BS6651</option>
+      <option value="NF C 17-102:2011">NF C 17-102:2011</option>
+      <option value="CP326:1965">CP326:1965</option>
     </select>
-  </div>  <div class="section" id="faultSection">
-    <h2>Possible Defects</h2>
-    <!-- Fault checkboxes injected here -->
-  </div>  <div class="section">
+  </div>
+
+  <div id="faultSection" class="section"></div>
+
+  <div class="section">
     <button onclick="generatePDF()">Generate PDF Report</button>
-  </div>  <div class="footer-text">
-    Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220
-  </div>  <script>
-    const standards = {
+  </div>
+
+  <footer>
+    Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.<br>
+    Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const faults = {
       BSEN62305: [
-        { clause: 'Part 3, Annex E, E.7.2.4 a)', title: 'Earth electrode isolation test', requirement: 'Each local earth electrode should be measured in isolation.', fault: 'Unable to test one or more earth electrodes.' }
+        {
+          clause: "Part 3, Annex E, E.7.2.4 a)",
+          description: "Each local earth electrode should be measured in isolation with the test joint disconnected.",
+          fault: "Unable to test one or more of the earth electrodes."
+        }
       ],
       BS6651: [],
-      NFC17102: [],
-      CP326: []
+      "NF C 17-102:2011": [],
+      "CP326:1965": []
     };
 
-    function renderFaults() {
-      const sel = document.getElementById('standard').value;
-      const section = document.getElementById('faultSection');
-      section.innerHTML = '<h2>Possible Defects</h2>';
-      if (!standards[sel]) return;
-      standards[sel].forEach((f, i) => {
-        const div = document.createElement('div');
-        div.className = 'fault-item';
+    function loadFaults() {
+      const selected = document.getElementById("standard").value;
+      const container = document.getElementById("faultSection");
+      container.innerHTML = "";
+
+      if (!selected || !faults[selected]) return;
+
+      faults[selected].forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "fault-block";
         div.innerHTML = `
-          <input type='checkbox' id='f${i}' onchange='toggleDetails(${i}, "${sel}")'>
-          <label for='f${i}'><strong>${f.title}</strong> (${f.clause})</label>
-          <div class='details' id='details-${i}'>
-            <p><strong>Minimum Requirement:</strong> ${f.requirement}</p>
-            <p><strong>Reason for Defect:</strong> ${f.fault}</p>
-            <label>Notes:</label><textarea id='notes-${i}' rows='3'></textarea><label>Photo:</label><input type='file' id='photo-${i}' accept='image/*' capture='environment'>
-      </div>`;
-    section.appendChild(div);
-  });
-}
-
-function toggleDetails(i, std) {
-  const chk = document.getElementById(`f${i}`);
-  const det = document.getElementById(`details-${i}`);
-  det.style.display = chk.checked ? 'block' : 'none';
-}
-
-async function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  let y = 40;
-  doc.setFontSize(18); doc.text('LPS Inspection Report', 300, y, { align: 'center' }); y += 30;
-  doc.setFontSize(12);
-  const fields = ['site','engineer','date','kit','building','weather','standard'];
-  const labels = ['Site Address','Engineer','Date','Test Kit Number','Building/Block','Weather','Standard Tested To'];
-  fields.forEach((id, idx) => {
-    const val = document.getElementById(id).value;
-    doc.text(`${labels[idx]}: ${val}`, 40, y);
-    y += 20;
-  });
-  // Faults on page 2
-  doc.addPage(); y = 40;
-  doc.setFontSize(16); doc.text('Defects', 300, y, { align: 'center' }); y += 30;
-  const std = document.getElementById('standard').value;
-  const list = standards[std] || [];
-  let count=0;
-  list.forEach((f, i) => {
-    if (document.getElementById(`f${i}`).checked) {
-      count++; doc.setFontSize(14);
-      doc.text(`Defect ${count}`, 40, y); y += 20;
-      doc.setFontSize(12);
-      doc.text(`Minimum Requirement: ${f.requirement}`, 40, y); y += 16;
-      doc.text(`Reason for Defect: ${f.fault}`, 40, y); y += 16;
-      const notes = document.getElementById(`notes-${i}`).value;
-      if (notes) { doc.text(`Notes: ${notes}`, 40, y); y += 16; }
-      const fileInput = document.getElementById(`photo-${i}`);
-      if (fileInput.files[0]) {
-        const imgData = await new Promise(resolve => {
-          const reader = new FileReader(); reader.onload=e=>resolve(e.target.result); reader.readAsDataURL(fileInput.files[0]);
-        });
-        doc.addImage(imgData, 'JPEG', 40, y, 150, 100);
-        y += 110;
-      }
-      if (y > 700) { doc.addPage(); y = 40; }
+          <label>
+            <input type="checkbox" onchange="toggleDetails(this, ${index})" />
+            ${item.clause}: ${item.fault}
+          </label>
+          <div id="details-${index}" style="display:none">
+            <p><strong>Minimum Requirement:</strong> ${item.description}</p>
+            <label>Notes:</label>
+            <textarea id="notes-${index}" rows="3"></textarea>
+            <label>Photo (upload or camera):</label>
+            <input type="file" id="photo-${index}" accept="image/*" capture="environment" />
+          </div>
+        `;
+        container.appendChild(div);
+      });
     }
-  });
-  // Footer
-  const footer = 'Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220';
-  const pages = doc.getNumberOfPages();
-  for (let p =1; p<=pages; p++) {
-    doc.setPage(p);
-    doc.setFontSize(8);
-    doc.text(footer, doc.internal.pageSize.getWidth()/2, doc.internal.pageSize.getHeight()-30, { align: 'center', maxWidth: doc.internal.pageSize.getWidth()-80 });
-  }
-  doc.save('LPS-Report.pdf');
-}
 
+    function toggleDetails(checkbox, index) {
+      const details = document.getElementById(`details-${index}`);
+      details.style.display = checkbox.checked ? "block" : "none";
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      doc.setFontSize(14);
+      doc.text("LPS Inspection Report", 20, y);
+      y += 10;
+
+      const fields = [
+        ["Site Address", "siteAddress"],
+        ["Engineer", "engineer"],
+        ["Test Kit", "testKit"],
+        ["Building Ref", "buildingRef"],
+        ["Date", "date"],
+        ["Weather", "weather"],
+        ["Standard Tested To", "standard"]
+      ];
+
+      doc.setFontSize(11);
+      fields.forEach(([label, id]) => {
+        const val = document.getElementById(id).value || "";
+        doc.text(`${label}: ${val}`, 20, y);
+        y += 7;
+      });
+
+      const selected = document.getElementById("standard").value;
+      const defectList = selected && faults[selected] ? faults[selected].filter((_, i) => document.querySelectorAll("input[type='checkbox']")[i].checked) : [];
+
+      if (defectList.length > 0) {
+        y += 10;
+        doc.setFontSize(13);
+        doc.text(`Defects Found: ${defectList.length}`, 20, y);
+        y += 10;
+
+        defectList.forEach((item, i) => {
+          doc.setFontSize(11);
+          doc.text(`Minimum Requirement: ${item.clause} - ${item.description}`, 20, y, { maxWidth: 170 });
+          y += 10;
+          doc.text(`Reason for Defect: ${item.fault}`, 20, y, { maxWidth: 170 });
+          y += 10;
+
+          const notes = document.getElementById(`notes-${i}`).value;
+          if (notes) {
+            doc.text(`Notes: ${notes}`, 20, y, { maxWidth: 170 });
+            y += 10;
+          }
+
+          if (y > 260) { doc.addPage(); y = 20; }
+        });
+      }
+
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text("Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220", 105, 290, { align: "center", maxWidth: 180 });
+      }
+
+      doc.save("LPS-Report.pdf");
+    }
   </script>
 </body>
 </html>
