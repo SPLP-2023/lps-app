@@ -1,254 +1,204 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>LPS Reporting Tool</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       max-width: 800px;
       margin: auto;
+      background-color: #f9f9f9;
     }
-
     h1 {
       text-align: center;
-    }
-
-    .section {
       margin-bottom: 30px;
     }
-
     textarea, select, input, button {
       display: block;
       margin-top: 10px;
       width: 100%;
-      padding: 8px;
+      padding: 10px;
+      font-size: 14px;
     }
-
-    .checkbox-group {
-      margin-top: 10px;
+    .section {
+      margin-bottom: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-
-    .checkbox-group label {
-      display: block;
-      margin: 5px 0;
-    }
-
-    img.preview {
-      max-width: 100px;
+    .defect-box {
+      border: 1px solid #ccc;
+      padding: 10px;
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>LPS Reporting Tool</h1>
+  <h1>LPS Reporting Tool</h1>  <div class="section">
+    <label for="engineer">Engineer Name:</label>
+    <input type="text" id="engineer" /><label for="site">Site Address:</label>
+<input type="text" id="site" />
 
-  <div class="section">
-    <label>Engineer Name:</label>
-    <input type="text" id="engineer" placeholder="Engineer Name" />
+<label for="date">Date:</label>
+<input type="date" id="date" />
 
-    <label>Site Address:</label>
-    <input type="text" id="address" placeholder="Site Address" />
+<label for="kit">Test Kit Number:</label>
+<input type="text" id="kit" />
 
-    <label>Date:</label>
-    <input type="date" id="date" />
+<label for="building">Building Reference:</label>
+<input type="text" id="building" />
 
-    <label>Test Kit Number:</label>
-    <input type="text" id="kit" placeholder="Test Kit Number" />
+<label for="weather">Weather & Ground Moisture Conditions:</label>
+<input type="text" id="weather" />
 
-    <label>Building / Block Reference:</label>
-    <input type="text" id="building" placeholder="Building or Block" />
+<label for="standard">Standard Tested To:</label>
+<select id="standard" onchange="showDefectOptions()">
+  <option value="">Select a standard</option>
+  <option value="BSEN62305">BSEN62305</option>
+  <!-- Add other standards later -->
+</select>
 
-    <label>Weather / Ground Moisture:</label>
-    <input type="text" id="weather" placeholder="e.g. Damp ground, Light rain" />
-  </div>
+  </div>  <div class="section" id="defect-options" style="display:none">
+    <h3>Select Defects:</h3>
+    <label><input type="checkbox" value="E.7.2.4 a" onchange="addDefect(this)"> BSEN62305 - E.7.2.4 a) Earth electrode not tested in isolation</label>
+  </div>  <div class="section">
+    <h3>Defects Added:</h3>
+    <div id="defect-list"></div>
+  </div>  <div class="section">
+    <button onclick="generatePDF()">Generate PDF Report</button>
+  </div>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>
+    window.defects = [];
 
-  <div class="section">
-    <label for="standard">Choose Standard:</label>
-    <select id="standard" onchange="showDefects()">
-      <option value="">-- Select --</option>
-      <option value="BSEN62305">BSEN62305</option>
-      <!-- Add more standards later -->
-    </select>
-    <div id="defectOptions" class="checkbox-group"></div>
-  </div>
-
-  <div class="section">
-    <label for="note">Defect Notes:</label>
-    <textarea id="note" rows="3" placeholder="Add notes for the selected defect..."></textarea>
-
-    <label>Add Photo (Camera or Upload):</label>
-    <input type="file" id="image" accept="image/*" capture="environment" />
-    <img id="preview" class="preview" />
-    <button onclick="addDefect()">Add Defect</button>
-  </div>
-
-  <div class="section">
-    <button onclick="generatePDF()">Generate PDF</button>
-  </div>
-
-  <script>
-    const defectList = {
-      BSEN62305: [
-        {
-          clause: "Part 3, Annex E, E.7.2.4 a)",
-          requirement: "The resistance to earth of each local earth electrode must be tested in isolation.",
-          reason: "Unable to test one or more of the earth electrodes."
-        }
-      ]
-    };
-
-    const defects = [];
-
-    function showDefects() {
+    function showDefectOptions() {
       const standard = document.getElementById("standard").value;
-      const container = document.getElementById("defectOptions");
-      container.innerHTML = "";
-
-      if (!defectList[standard]) return;
-
-      defectList[standard].forEach((d, i) => {
-        const id = `defect-${i}`;
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = id;
-        checkbox.value = i;
-
-        const label = document.createElement("label");
-        label.htmlFor = id;
-        label.innerText = `Clause: ${d.clause} - ${d.reason}`;
-
-        container.appendChild(checkbox);
-        container.appendChild(label);
-      });
+      const options = document.getElementById("defect-options");
+      options.style.display = standard ? "block" : "none";
     }
 
-    document.getElementById("image").addEventListener("change", function (e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (evt) {
-          document.getElementById("preview").src = evt.target.result;
-          document.getElementById("preview").style.display = "block";
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    function addDefect(checkbox) {
+      const list = document.getElementById("defect-list");
+      if (checkbox.checked) {
+        const box = document.createElement("div");
+        box.className = "defect-box";
+        box.setAttribute("data-clause", checkbox.value);
 
-    function addDefect() {
-      const standard = document.getElementById("standard").value;
-      const note = document.getElementById("note").value;
-      const imgData = document.getElementById("preview").src || "";
-      const selected = document.querySelectorAll("#defectOptions input:checked");
+        const title = document.createElement("p");
+        title.textContent = `Clause ${checkbox.value}`;
 
-      selected.forEach(s => {
-        const defect = defectList[standard][s.value];
-        defects.push({
-          ...defect,
-          note,
-          image: imgData
+        const note = document.createElement("textarea");
+        note.placeholder = "Reason for defect";
+
+        const image = document.createElement("input");
+        image.type = "file";
+        image.accept = "image/*";
+
+        box.appendChild(title);
+        box.appendChild(note);
+        box.appendChild(image);
+        list.appendChild(box);
+      } else {
+        const boxes = document.querySelectorAll('.defect-box');
+        boxes.forEach(box => {
+          if (box.getAttribute("data-clause") === checkbox.value) {
+            box.remove();
+          }
         });
-        s.checked = false;
-      });
-
-      document.getElementById("note").value = "";
-      document.getElementById("image").value = "";
-      document.getElementById("preview").style.display = "none";
+      }
     }
 
     async function generatePDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const margin = 15;
-      const lineHeight = 8;
-      let y = margin;
 
       const engineer = document.getElementById("engineer").value;
-      const address = document.getElementById("address").value;
+      const site = document.getElementById("site").value;
       const date = document.getElementById("date").value;
       const kit = document.getElementById("kit").value;
       const building = document.getElementById("building").value;
       const weather = document.getElementById("weather").value;
       const standard = document.getElementById("standard").value;
 
-      // Page 1 Header
-      doc.setFontSize(16);
-      doc.text("Lightning Protection System Report", margin, y);
-      y += lineHeight * 2;
+      // ===== COVER PAGE =====
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(22);
+      doc.text("Lightning Protection System Inspection Report", 105, 20, { align: "center" });
 
+      doc.setFont("Helvetica", "normal");
       doc.setFontSize(12);
-      doc.text(`Engineer: ${engineer}`, margin, y); y += lineHeight;
-      doc.text(`Site Address: ${address}`, margin, y); y += lineHeight;
-      doc.text(`Date: ${date}`, margin, y); y += lineHeight;
-      doc.text(`Test Kit Number: ${kit}`, margin, y); y += lineHeight;
-      doc.text(`Building/Block: ${building}`, margin, y); y += lineHeight;
-      doc.text(`Weather: ${weather}`, margin, y); y += lineHeight;
-      doc.text(`Standard Tested To: ${standard}`, margin, y); y += lineHeight;
+      doc.text(`Engineer: ${engineer}`, 20, 40);
+      doc.text(`Site Address: ${site}`, 20, 50);
+      doc.text(`Date: ${date}`, 20, 60);
+      doc.text(`Test Kit No.: ${kit}`, 20, 70);
+      doc.text(`Building Reference: ${building}`, 20, 80);
+      doc.text(`Weather & Ground Conditions: ${weather}`, 20, 90);
+      doc.text(`Standard Tested To: ${standard}`, 20, 100);
 
-      // Add logo if available
-      const logo = document.getElementById("preview").src;
-      if (logo && logo.startsWith("data:image")) {
-        doc.addImage(logo, "JPEG", 150, 10, 40, 20);
-      }
+      addFooter(doc, 297);
 
-      // Page break before defects
-      doc.addPage();
-      y = margin;
+      const boxes = document.querySelectorAll(".defect-box");
+      if (boxes.length > 0) {
+        doc.addPage();
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text(`Defects Found (${boxes.length})`, 20, 20);
 
-      // Defects section
-      doc.setFontSize(14);
-      doc.text(`Defects Found: ${defects.length}`, margin, y);
-      y += lineHeight;
+        let y = 35;
+        for (let i = 0; i < boxes.length; i++) {
+          const clause = boxes[i].getAttribute("data-clause");
+          const reason = boxes[i].querySelector("textarea").value;
+          const file = boxes[i].querySelector("input[type='file']").files[0];
 
-      defects.forEach((d, i) => {
-        if (y > 260) {
-          doc.addPage();
-          y = margin;
-        }
+          doc.setFont("Helvetica", "bold");
+          doc.setFontSize(14);
+          doc.text(`Defect ${i + 1}`, 20, y);
 
-        doc.setFontSize(12);
-        doc.setFont(undefined, "bold");
-        doc.text(`Defect ${i + 1}:`, margin, y);
-        y += lineHeight;
+          doc.setFont("Helvetica", "normal");
+          doc.setFontSize(11);
+          doc.text(`Minimum Requirement: Clause ${clause}`, 20, y + 10);
+          doc.text(`Reason for Defect: ${reason}`, 20, y + 20);
 
-        doc.setFont(undefined, "normal");
-        doc.text(`Minimum Requirement: ${d.requirement}`, margin, y);
-        y += lineHeight;
-        doc.text(`Reason for Defect: ${d.reason}`, margin, y);
-        y += lineHeight;
-        if (d.note) {
-          doc.text(`Engineer Notes: ${d.note}`, margin, y);
-          y += lineHeight;
-        }
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const img = new Image();
+              img.onload = function () {
+                doc.addImage(img, 'JPEG', 140, y + 5, 50, 40);
+                y += 60;
+                if (i === boxes.length - 1) {
+                  addFooter(doc, 297);
+                  doc.save("LPS_Report.pdf");
+                }
+              };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          } else {
+            y += 60;
+            if (i === boxes.length - 1) {
+              addFooter(doc, 297);
+              doc.save("LPS_Report.pdf");
+            }
+          }
 
-        if (d.image && d.image.startsWith("data:image")) {
-          try {
-            doc.addImage(d.image, "JPEG", margin, y, 60, 45);
-            y += 50;
-          } catch (err) {
-            console.warn("Image failed to load in PDF");
+          if (y > 250 && i < boxes.length - 1) {
+            addFooter(doc, 297);
+            doc.addPage();
+            y = 20;
           }
         }
-
-        y += lineHeight;
-      });
-
-      // Footer on each page
-      const pageCount = doc.getNumberOfPages();
-      const footerText = `Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ. 
-Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220`;
-
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        const splitFooter = doc.splitTextToSize(footerText, 180);
-        doc.setFontSize(8);
-        doc.text(splitFooter, 105, 290, { align: "center" });
+      } else {
+        doc.save("LPS_Report.pdf");
       }
-
-      doc.save("LPS_Report.pdf");
     }
-  </script>
-</body>
+
+    function addFooter(doc, pageHeight) {
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      const footerText = `Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220`;
+      const lines = doc.splitTextToSize(footerText, 170);
+      doc.text(lines, 105, pageHeight - 10, { align: "center" });
+    }
+  </script></body>
 </html>
