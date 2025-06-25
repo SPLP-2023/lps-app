@@ -1,239 +1,226 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>LPS Reporting Tool</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       padding: 20px;
-      max-width: 900px;
+      max-width: 800px;
       margin: auto;
       background: #f9f9f9;
     }
-    h1, h2 {
-      text-align: center;
-    }
-    .section {
-      margin-bottom: 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    label {
+    textarea, select, button, input {
       display: block;
       margin-top: 10px;
-      font-weight: bold;
-    }
-    textarea, select, input[type="text"], input[type="file"], input[type="date"] {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      box-sizing: border-box;
     }
-    .checkbox-container {
-      margin-top: 10px;
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 6px;
     }
-    .checkbox-item {
+    label {
+      font-weight: bold;
+    }
+    .defect-item {
       margin-bottom: 10px;
     }
-    button {
-      padding: 10px 20px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    #defectNotes {
+      margin-top: 10px;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
-    footer {
-      font-size: 8pt;
-      text-align: center;
-      margin-top: 50px;
-      white-space: pre-line;
+    #preview {
+      margin-top: 10px;
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
   <h1>LPS Reporting Tool</h1>  <div class="section">
     <label for="engineer">Engineer Name:</label>
-    <input type="text" id="engineer"><label for="site">Site Address:</label>
-<input type="text" id="site">
+    <input type="text" id="engineer" placeholder="Enter engineer's name" /><label for="site">Site Address:</label>
+<input type="text" id="site" placeholder="Enter site address" />
 
 <label for="date">Date:</label>
-<input type="date" id="date">
+<input type="date" id="date" />
 
 <label for="kit">Test Kit Number:</label>
-<input type="text" id="kit">
+<input type="text" id="kit" placeholder="Enter test kit number" />
 
 <label for="building">Building/Block Reference:</label>
-<input type="text" id="building">
+<input type="text" id="building" placeholder="Enter building reference" />
 
-<label for="weather">Weather Conditions / Ground Moisture:</label>
-<input type="text" id="weather">
+<label for="weather">Weather Conditions:</label>
+<input type="text" id="weather" placeholder="e.g., Dry, Damp, Wet" />
 
   </div>  <div class="section">
     <label for="standard">Choose Standard:</label>
-    <select id="standard" onchange="showDefects()">
-      <option value="">-- Select a Standard --</option>
+    <select id="standard" onchange="showDefectOptions()">
+      <option value="">-- Select Standard --</option>
       <option value="BSEN62305">BSEN62305</option>
     </select>
-    <div id="defects"></div>
-  </div>  <div class="section">
-    <h2>Defects</h2>
-    <div id="selectedDefects"></div>
+  </div>  <div class="section" id="defectOptions" style="display:none">
+    <label>Tick applicable defects:</label>
+    <div class="defect-item">
+      <input type="checkbox" id="defect1" onchange="toggleNoteInput(1)" />
+      <label for="defect1">BSEN62305 - Part 3, Annex E, E.7.2.4 a)</label>
+      <div id="note1" style="display:none">
+        <textarea placeholder="Add notes..." id="noteText1"></textarea>
+        <input type="file" accept="image/*" capture="environment" onchange="previewImage(event, 1)" />
+        <img id="preview1" style="max-width:100%; display:none;" />
+      </div>
+    </div>
   </div>  <div class="section">
     <button onclick="generatePDF()">Generate PDF Report</button>
-  </div>  <footer>
-    Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.
-    Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220
-  </footer>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>
-    const defectData = {
-      BSEN62305: [
+  </div>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <script>
+    const { jsPDF } = window.jspdf;
+
+    function showDefectOptions() {
+      document.getElementById('defectOptions').style.display = 'block';
+    }
+
+    function toggleNoteInput(num) {
+      const note = document.getElementById('note' + num);
+      note.style.display = note.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function previewImage(event, num) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = document.getElementById('preview' + num);
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    }
+
+    function generatePDF() {
+      const doc = new jsPDF();
+      let y = 20;
+      const margin = 15;
+      const lineHeight = 8;
+
+      function addText(title, value) {
+        doc.setFont('helvetica', 'bold');
+        doc.text(title + ":", margin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(value || '-', margin + 40, y);
+        y += lineHeight;
+      }
+
+      // Page 1: Basic Info
+      doc.setFontSize(16);
+      doc.text("LPS Inspection Report", margin, y);
+      y += 10;
+
+      doc.setFontSize(11);
+      addText("Engineer", document.getElementById("engineer").value);
+      addText("Site Address", document.getElementById("site").value);
+      addText("Date", document.getElementById("date").value);
+      addText("Test Kit Number", document.getElementById("kit").value);
+      addText("Building Reference", document.getElementById("building").value);
+      addText("Weather Conditions", document.getElementById("weather").value);
+      addText("Standard Tested To", document.getElementById("standard").value);
+
+      addFooter(doc);
+
+      // Page 2: Defects
+      doc.addPage();
+      y = 20;
+      doc.setFontSize(14);
+      doc.text("Defects", margin, y);
+      y += 10;
+
+      const defects = [
         {
-          clause: "Part 3, Annex E, E.7.2.4 a)",
-          requirement: "The resistance to earth of each local earth electrode and where reasonably practical the resistance to earth of the complete earth-termination system.",
-          reason: "Unable to test one or more of the earth electrodes"
+          checkboxId: 'defect1',
+          clause: 'Part 3, Annex E, E.7.2.4 a)',
+          requirement: 'Each local earth electrode should be measured in isolation with the test joint between the down-conductor and earth electrode in the disconnected position (isolated measurement).',
+          reason: 'Unable to test one or more of the earth electrodes.',
+          noteId: 'noteText1',
+          imgId: 'preview1'
         }
-      ]
-    };
+      ];
 
-    const imageInputs = [];
+      let count = 1;
+      for (let d of defects) {
+        if (document.getElementById(d.checkboxId).checked) {
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text(`Defect ${count}`, margin, y);
+          y += 6;
 
-    function showDefects() {
-      const standard = document.getElementById("standard").value;
-      const defectsDiv = document.getElementById("defects");
-      defectsDiv.innerHTML = '';
+          doc.setFont('helvetica', 'bold');
+          doc.text("Minimum Requirement:", margin, y);
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          y = doc.splitTextToSize(d.requirement, 180).reduce((acc, line) => {
+            doc.text(line, margin, acc);
+            return acc + 6;
+          }, y);
 
-      if (standard && defectData[standard]) {
-        defectData[standard].forEach((defect, index) => {
-          const container = document.createElement('div');
-          container.classList.add('checkbox-item');
+          doc.setFont('helvetica', 'bold');
+          doc.text("Reason for Defect:", margin, y);
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          y = doc.splitTextToSize(d.reason, 180).reduce((acc, line) => {
+            doc.text(line, margin, acc);
+            return acc + 6;
+          }, y);
 
-          container.innerHTML = `
-            <input type="checkbox" id="defect-${index}" onchange="toggleDefect(${index})">
-            <label for="defect-${index}"><strong>${defect.clause}</strong>: ${defect.reason}</label>
-            <textarea id="note-${index}" placeholder="Add notes..." style="display:none"></textarea><input type="file" accept="image/*" id="image-${index}" style="display:none">
-      `;
+          const note = document.getElementById(d.noteId).value;
+          if (note) {
+            doc.setFont('helvetica', 'bold');
+            doc.text("Engineer Notes:", margin, y);
+            y += 6;
+            doc.setFont('helvetica', 'normal');
+            y = doc.splitTextToSize(note, 180).reduce((acc, line) => {
+              doc.text(line, margin, acc);
+              return acc + 6;
+            }, y);
+          }
 
-      defectsDiv.appendChild(container);
-    });
-  }
-}
+          const img = document.getElementById(d.imgId);
+          if (img && img.src) {
+            const imgProps = doc.getImageProperties(img.src);
+            const imgWidth = 80;
+            const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+            if (y + imgHeight > 270) {
+              doc.addPage();
+              y = 20;
+            }
+            doc.addImage(img.src, 'JPEG', margin, y, imgWidth, imgHeight);
+            y += imgHeight + 10;
+          }
 
-function toggleDefect(index) {
-  const checked = document.getElementById(`defect-${index}`).checked;
-  document.getElementById(`note-${index}`).style.display = checked ? 'block' : 'none';
-  document.getElementById(`image-${index}`).style.display = checked ? 'block' : 'none';
-}
-
-async function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  // Header page
-  doc.setFontSize(16);
-  doc.text("LPS Inspection Report", 105, 20, null, null, "center");
-
-  const fields = [
-    ["Engineer", "engineer"],
-    ["Site Address", "site"],
-    ["Date", "date"],
-    ["Test Kit Number", "kit"],
-    ["Building / Block", "building"],
-    ["Weather / Ground Moisture", "weather"],
-    ["Standard Tested", "standard"]
-  ];
-
-  let y = 40;
-  doc.setFontSize(12);
-  fields.forEach(([label, id]) => {
-    const value = document.getElementById(id).value;
-    doc.text(`${label}: ${value}`, 20, y);
-    y += 10;
-  });
-
-  doc.addPage();
-  y = 20;
-  doc.setFontSize(14);
-  doc.text("Defects Found", 105, y, null, null, "center");
-  y += 10;
-
-  let defectCount = 0;
-  const standard = document.getElementById("standard").value;
-  if (standard && defectData[standard]) {
-    for (let i = 0; i < defectData[standard].length; i++) {
-      if (document.getElementById(`defect-${i}`).checked) {
-        defectCount++;
-        const def = defectData[standard][i];
-        const note = document.getElementById(`note-${i}`).value;
-        const imgInput = document.getElementById(`image-${i}`);
-
-        if (y > 260) {
-          doc.addPage();
-          y = 20;
-        }
-
-        doc.setFontSize(12);
-        doc.text(`Defect ${defectCount}:`, 20, y);
-        y += 7;
-        doc.setFont(undefined, "bold");
-        doc.text(`Minimum Requirement:`, 20, y);
-        doc.setFont(undefined, "normal");
-        doc.text(def.requirement, 60, y, { maxWidth: 130 });
-        y += 10;
-
-        doc.setFont(undefined, "bold");
-        doc.text(`Reason for Defect:`, 20, y);
-        doc.setFont(undefined, "normal");
-        doc.text(def.reason, 60, y, { maxWidth: 130 });
-        y += 10;
-
-        if (note) {
-          doc.text(`Engineer Notes: ${note}`, 20, y, { maxWidth: 170 });
           y += 10;
-        }
-
-        if (imgInput && imgInput.files.length > 0) {
-          const file = imgInput.files[0];
-          const imgData = await toBase64(file);
-          doc.addImage(imgData, "JPEG", 20, y, 60, 45);
-          y += 50;
+          count++;
         }
       }
+
+      addFooter(doc);
+      doc.save("LPS_Report.pdf");
     }
-  }
 
-  // Footer on last page
-  const pageCount = doc.internal.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.text(
-      `Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220`,
-      105,
-      285,
-      { align: "center", maxWidth: 180 }
-    );
-  }
-
-  doc.save("LPS-Report.pdf");
-}
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
-
-  </script>
-</body>
+    function addFooter(doc) {
+      const pageCount = doc.getNumberOfPages();
+      const footerText = "Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220";
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(footerText, 180);
+        let footerY = 290 - (lines.length - 1) * 4;
+        lines.forEach(line => {
+          doc.text(line, 105, footerY, { align: 'center' });
+          footerY += 4;
+        });
+      }
+    }
+  </script></body>
 </html>
