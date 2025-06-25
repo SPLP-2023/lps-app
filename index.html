@@ -5,49 +5,33 @@
   <title>Strike Point LPS Reporting Tool</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 40px 20px;
+      font-family: Arial, sans-serif;
+      padding: 20px;
       max-width: 900px;
       margin: auto;
-      background-color: #f8f9fa;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      margin-bottom: 30px;
     }
 
     label, select, input, textarea, button {
       display: block;
       width: 100%;
       margin-top: 10px;
-      padding: 10px;
-      font-size: 14px;
+      padding: 8px;
     }
 
     .section {
       margin-bottom: 30px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .fault-block {
-      border-top: 1px solid #ccc;
-      padding-top: 15px;
-      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
     }
 
     footer {
       font-size: 8px;
       text-align: center;
       margin-top: 40px;
-      max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.5;
     }
 
     .logo {
@@ -134,7 +118,7 @@
             ${item.clause}: ${item.fault}
           </label>
           <div id="details-${index}" style="display:none">
-            <p><strong>Minimum Requirement:</strong> ${item.description}</p>
+            <p>${item.description}</p>
             <label>Notes:</label>
             <textarea id="notes-${index}" rows="3"></textarea>
             <label>Photo (upload or camera):</label>
@@ -155,61 +139,88 @@
       const doc = new jsPDF();
       let y = 20;
 
+      // Header
       doc.setFontSize(14);
       doc.text("LPS Inspection Report", 20, y);
       y += 10;
 
+      // Form values
       const fields = [
         ["Site Address", "siteAddress"],
         ["Engineer", "engineer"],
         ["Test Kit", "testKit"],
         ["Building Ref", "buildingRef"],
         ["Date", "date"],
-        ["Weather", "weather"],
-        ["Standard Tested To", "standard"]
+        ["Weather", "weather"]
       ];
 
       doc.setFontSize(11);
-      fields.forEach(([label, id]) => {
+      for (let [label, id] of fields) {
         const val = document.getElementById(id).value || "";
         doc.text(`${label}: ${val}`, 20, y);
         y += 7;
-      });
+        if (y > 270) { doc.addPage(); y = 20; }
+      }
 
-      const selected = document.getElementById("standard").value;
-      const defectList = selected && faults[selected] ? faults[selected].filter((_, i) => document.querySelectorAll("input[type='checkbox']")[i].checked) : [];
-
-      if (defectList.length > 0) {
-        y += 10;
+      // Faults
+      const standard = document.getElementById("standard").value;
+      if (standard && faults[standard]) {
+        doc.addPage();
+        y = 20;
         doc.setFontSize(13);
-        doc.text(`Defects Found: ${defectList.length}`, 20, y);
+        doc.text(`Standard: ${standard}`, 20, y);
         y += 10;
 
-        defectList.forEach((item, i) => {
-          doc.setFontSize(11);
-          doc.text(`Minimum Requirement: ${item.clause} - ${item.description}`, 20, y, { maxWidth: 170 });
-          y += 10;
-          doc.text(`Reason for Defect: ${item.fault}`, 20, y, { maxWidth: 170 });
-          y += 10;
+        faults[standard].forEach((item, i) => {
+          const checkbox = document.querySelectorAll("input[type='checkbox']")[i];
+          if (checkbox && checkbox.checked) {
+            doc.setFontSize(11);
+            doc.text(`Clause: ${item.clause}`, 20, y); y += 6;
+            doc.text(`Issue: ${item.fault}`, 20, y); y += 6;
 
-          const notes = document.getElementById(`notes-${i}`).value;
-          if (notes) {
-            doc.text(`Notes: ${notes}`, 20, y, { maxWidth: 170 });
-            y += 10;
+            const notes = document.getElementById(`notes-${i}`).value;
+            if (notes) {
+              doc.text(`Notes: ${notes}`, 20, y); y += 6;
+            }
+
+            const fileInput = document.getElementById(`photo-${i}`);
+            if (fileInput.files.length > 0) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                  doc.addImage(img, "JPEG", 20, y, 60, 45);
+                  y += 55;
+                  finishOrDownload(doc);
+                };
+                img.src = e.target.result;
+              };
+              reader.readAsDataURL(fileInput.files[0]);
+            } else {
+              y += 5;
+            }
+
+            if (y > 270) { doc.addPage(); y = 20; }
           }
-
-          if (y > 260) { doc.addPage(); y = 20; }
         });
       }
 
-      const pageCount = doc.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.text("Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220", 105, 290, { align: "center", maxWidth: 180 });
+      function finishOrDownload(pdf) {
+        // Footer on each page
+        const pageCount = pdf.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          pdf.setPage(i);
+          pdf.setFontSize(8);
+          pdf.text("Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220", 105, 290, { align: "center" });
+        }
+
+        pdf.save("LPS-Report.pdf");
       }
 
-      doc.save("LPS-Report.pdf");
+      // If no images to wait on, go straight to download
+      if (!document.querySelector("input[type='file']").files.length) {
+        finishOrDownload(doc);
+      }
     }
   </script>
 </body>
