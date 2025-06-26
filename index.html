@@ -699,75 +699,94 @@
             }
         };
         
-        const failuresData = {
-            'BSEN62305': {
-                'Air-Termination System': [
-                    'Part 3, Section 5.2 - Insufficient protection coverage/angles exceeded',
-                    'Part 3, Section 5.2 - Inadequate conductor cross-section (<50mm² Cu)',
-                    'Part 3, Section 5.2 - Corrosion or physical damage to conductors',
-                    'Part 3, Section 5.2 - Poor bonding of metallic roof elements',
-                    'Part 3, Section 5.2 - Inadequate height above roof level'
-                ],
-                'Down-Conductor System': [
-                    'Part 3, Section 5.3 - Insufficient number for structure perimeter',
-                    'Part 3, Section 5.3 - Excessive spacing between conductors',
-                    'Part 3, Section 5.3 - Sharp bends (radius <20cm)',
-                    'Part 3, Section 5.3 - Inadequate separation from structure',
-                    'Part 3, Section 5.3 - Missing mechanical protection'
-                ],
-                'Earth-Termination System': [
-                    'Part 3, Section 5.4 - High earth resistance readings',
-                    'Part 3, Section 5.4 - Insufficient electrode length',
-                    'Part 3, Section 5.4 - Poor connections or corrosion',
-                    'Part 3, Section 5.4 - Missing structural steelwork bonding'
-                ],
-                'General System Requirements': [
-                    'Part 4 - Missing surge protection devices',
-                    'Part 3 - Inadequate equipotential bonding',
-                    'Part 2 - System not meeting protection level requirements',
-                    'Part 3, Annex E - No evidence of annual inspection',
-                    'General - Missing system drawings/certificates'
-                ]
+       const failuresData = {
+    'BSEN62305': {
+        'Air-Termination System': [
+            {
+                description: 'Insufficient protection coverage/angles exceeded',
+                citation: 'BS EN 62305-3:2011, Clause 5.2.2',
+                requirement: 'Air-termination system must provide complete protection using rolling sphere method (radius: Level I=20m, II=30m, III=45m, IV=60m), protection angle method, or mesh method.',
+                reason: 'Protection zones not adequately covered, leaving areas vulnerable to direct lightning strikes.'
             },
-            'BS6651': {
-                'Lightning Conductor System': [
-                    'Section 4 - Inadequate height protection',
-                    'Section 4 - Insufficient cross-sectional area',
-                    'Section 4 - Corrosion or physical damage',
-                    'Section 4 - Poor workmanship in joints'
-                ],
-                'Down-Conductor System': [
-                    'Section 5 - Improper installation path',
-                    'Section 5 - Inadequate fixings and supports',
-                    'Section 5 - Missing mechanical protection'
-                ],
-                'Earth Electrode System': [
-                    'Section 6 - High resistance readings (>10Ω)',
-                    'Section 6 - Insufficient electrode length',
-                    'Section 6 - Poor earth connections'
-                ],
-                'General Requirements': [
-                    'Section 8 - Missing metallic service bonding',
-                    'Section 9 - No test results available',
-                    'Section 3 - Non-compliant material specifications'
-                ]
+            {
+                description: 'Inadequate conductor cross-section (<50mm² Cu)',
+                citation: 'BS EN 62305-3:2011, Clause 5.2.3 & Table 3',
+                requirement: 'Minimum cross-sectional area: 50mm² for copper, 70mm² for aluminium. Minimum thickness: 2mm for copper, 2.5mm for aluminium.',
+                reason: 'Conductor cross-section insufficient to safely carry lightning current without damage.'
             },
-            'CP326': [
-                'Lightning rod: Inadequate protection cone',
-                'Conductor: Insufficient gauge for application',
-                'Earth connection: High resistance readings',
-                'Installation: Poor workmanship standards',
-                'Maintenance: No inspection records available'
-            ],
-            'NFC17102': [
-                'Système de capture: Protection insuffisante',
-                'Conducteurs de descente: Nombre insuffisant selon périmètre',
-                'Prise de terre: Résistance élevée',
-                'Liaisons équipotentielles: Manquantes ou défaillantes',
-                'Parafoudres: Non conformes aux exigences',
-                'Contrôles: Absence de vérifications périodiques'
-            ]
-        };
+            {
+                description: 'Corrosion or physical damage to conductors',
+                citation: 'BS EN 62305-3:2011, Clause 6.3',
+                requirement: 'All materials must be corrosion-resistant and suitable for the environment. Regular inspection required to identify deterioration.',
+                reason: 'Material degradation compromises system integrity and current-carrying capacity.'
+            },
+            {
+                description: 'Poor bonding of metallic roof elements',
+                citation: 'BS EN 62305-3:2011, Clause 5.2.6',
+                requirement: 'All metallic installations on the roof must be bonded to the air-termination system if they protrude above the protection zone.',
+                reason: 'Unbonded metallic elements create alternative strike points and potential side-flash hazards.'
+            }
+        ],
+        'Down-Conductor System': [
+            {
+                description: 'Insufficient number for structure perimeter',
+                citation: 'BS EN 62305-3:2011, Clause 5.3.2 & Table 4',
+                requirement: 'Minimum 2 down-conductors for perimeter ≤60m. For perimeter >60m: number = (perimeter/60) rounded up.',
+                reason: 'Insufficient current paths increase risk of dangerous side-flashing and system overload.'
+            },
+            {
+                description: 'Excessive spacing between conductors',
+                citation: 'BS EN 62305-3:2011, Clause 5.3.2',
+                requirement: 'Maximum spacing: Protection Level I=10m, Level II=15m, Level III-IV=20m. Must be evenly distributed.',
+                reason: 'Excessive spacing creates unprotected areas and increases electromagnetic field effects.'
+            },
+            {
+                description: 'Sharp bends (radius <20cm)',
+                citation: 'BS EN 62305-3:2011, Clause 5.3.4',
+                requirement: 'Minimum bending radius: 20cm for all materials. Route must follow shortest practical path to earth.',
+                reason: 'Sharp bends create high voltage concentration points and potential spark-over locations.'
+            }
+        ],
+        'Earth-Termination System': [
+            {
+                description: 'High earth resistance readings',
+                citation: 'BS EN 62305-3:2011, Clause 5.4.1',
+                requirement: 'Target ≤10Ω preferred. More important is achieving minimum electrode dimensions per system type.',
+                reason: 'High resistance impedes current dissipation and may cause dangerous voltage rise.'
+            },
+            {
+                description: 'Insufficient electrode length',
+                citation: 'BS EN 62305-3:2011, Clause 5.4.2 & 5.4.3',
+                requirement: 'Type A: Ring electrode minimum 1.6m from building. Type B: Minimum 2m length per down-conductor.',
+                reason: 'Inadequate electrode length reduces current dissipation capability and system effectiveness.'
+            }
+        ]
+    },
+    'BS6651': {
+        'Lightning Conductor System': [
+            {
+                description: 'Inadequate height protection',
+                citation: 'BS 6651:1999, Clause 4.2',
+                requirement: 'Lightning conductor must extend minimum 0.6m above highest point of structure.',
+                reason: 'Insufficient height leaves upper portions of structure unprotected from direct strikes.'
+            },
+            {
+                description: 'Insufficient cross-sectional area',
+                citation: 'BS 6651:1999, Table 1',
+                requirement: 'Minimum conductor size: 50mm² copper tape/strip, 8mm diameter copper rod, or equivalent.',
+                reason: 'Undersized conductors cannot safely handle lightning current magnitudes.'
+            }
+        ],
+        'Earth Electrode System': [
+            {
+                description: 'High resistance (>10Ω)',
+                citation: 'BS 6651:1999, Clause 6.2',
+                requirement: 'Earth electrode resistance should not exceed 10Ω. Additional electrodes required if exceeded.',
+                reason: 'High resistance prevents effective current dissipation into earth.'
+            }
+        ]
+    }
+};
         
         let selectedFailures = [];
         let buildingImageData = null;
@@ -879,14 +898,54 @@
         }
         
         function toggleFailure(failureText, isSelected) {
-            if (isSelected) {
-                if (!selectedFailures.find(f => f.text === failureText)) {
-                    selectedFailures.push({
-                        id: Date.now() + Math.random(),
-                        text: failureText,
-                        notes: '',
-                        image: null
-                    });
+    if (isSelected) {
+        if (!selectedFailures.find(f => f.text === failureText)) {
+            // Find the complete failure object from failuresData
+            let failureObj = {
+                id: Date.now() + Math.random(),
+                text: failureText,
+                notes: '',
+                image: null,
+                citation: '',
+                requirement: '',
+                reason: ''
+            };
+
+            // Search through failuresData to find matching failure
+            const standard = document.getElementById('selectedStandard').value;
+            if (standard && failuresData[standard]) {
+                const failures = failuresData[standard];
+                
+                // Search through categories
+                for (const [category, categoryFailures] of Object.entries(failures)) {
+                    if (Array.isArray(categoryFailures)) {
+    failuresHtml += categoryFailures.map((failure, index) => {
+        const failureText = typeof failure === 'object' ? failure.description : failure;
+        return `
+            <div class="failure-item">
+                <input type="checkbox" id="failure_${category}_${index}" onchange="toggleFailure('${failureText}', this.checked)">
+                <div class="failure-text">${failureText}</div>
+            </div>
+        `;
+    }).join('');
+                    }
+                        if (found) {
+                            failureObj.citation = found.citation || '';
+                            failureObj.requirement = found.requirement || '';
+                            failureObj.reason = found.reason || '';
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            selectedFailures.push(failureObj);
+        }
+    } else {
+        selectedFailures = selectedFailures.filter(f => f.text !== failureText);
+    }
+    updateSelectedFailuresDisplay();
+        }
                 }
             } else {
                 selectedFailures = selectedFailures.filter(f => f.text !== failureText);
@@ -1079,50 +1138,92 @@ function generatePDF() {
             y += 10; 
 
             selectedFailures.forEach((failure, index) => {
-                if (y > 250) {
-                    doc.addPage();
-                    y = 20;
-                } 
+    if (y > 200) {
+        doc.addPage();
+        y = 20;
+    }
 
-                doc.setFontSize(12);
-                doc.setFont('helvetica', 'bold');
-                doc.text(`Failure ${index + 1}:`, margin, y);
-                y += 6; 
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Failure ${index + 1}:`, margin, y);
+    y += 8;
 
-                doc.setFont('helvetica', 'normal');
-                const failureLines = doc.splitTextToSize(failure.text, 170);
-                failureLines.forEach(line => {
-                    doc.text(line, margin, y);
-                    y += 6;
-                }); 
+    // Failure description
+    doc.setFont('helvetica', 'normal');
+    const failureLines = doc.splitTextToSize(failure.text, 170);
+    failureLines.forEach(line => {
+        doc.text(line, margin, y);
+        y += 6;
+    });
+    y += 4;
 
-                if (failure.notes) {
-                    y += 3;
-                    doc.setFont('helvetica', 'bold');
-                    doc.text("Engineer Notes:", margin, y);
-                    y += 6;
-                    doc.setFont('helvetica', 'normal');
-                    const notesLines = doc.splitTextToSize(failure.notes, 170);
-                    notesLines.forEach(line => {
-                        doc.text(line, margin, y);
-                        y += 6;
-                    });
-                } 
+    // Add citation if available
+    if (failure.citation) {
+        doc.setFont('helvetica', 'bold');
+        doc.text("Standard Reference:", margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(failure.citation, margin, y);
+        y += 8;
+    }
 
-                if (failure.image) {
-                    if (y > 200) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    const imgProps = doc.getImageProperties(failure.image);
-                    const imgWidth = 80;
-                    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-                    doc.addImage(failure.image, 'JPEG', margin, y, imgWidth, imgHeight);
-                    y += imgHeight + 10;
-                } 
+    // Add minimum requirement if available
+    if (failure.requirement) {
+        doc.setFont('helvetica', 'bold');
+        doc.text("Minimum Requirement:", margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        const reqLines = doc.splitTextToSize(failure.requirement, 170);
+        reqLines.forEach(line => {
+            doc.text(line, margin, y);
+            y += 6;
+        });
+        y += 4;
+    }
 
-                y += 10;
-            });
+    // Add reason for failure if available
+    if (failure.reason) {
+        doc.setFont('helvetica', 'bold');
+        doc.text("Reason for Failure:", margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        const reasonLines = doc.splitTextToSize(failure.reason, 170);
+        reasonLines.forEach(line => {
+            doc.text(line, margin, y);
+            y += 6;
+        });
+        y += 4;
+    }
+
+    // Engineer notes (existing code)
+    if (failure.notes) {
+        doc.setFont('helvetica', 'bold');
+        doc.text("Engineer Notes:", margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        const notesLines = doc.splitTextToSize(failure.notes, 170);
+        notesLines.forEach(line => {
+            doc.text(line, margin, y);
+            y += 6;
+        });
+        y += 4;
+    }
+
+    // Image handling (existing code)
+    if (failure.image) {
+        if (y > 200) {
+            doc.addPage();
+            y = 20;
+        }
+        const imgProps = doc.getImageProperties(failure.image);
+        const imgWidth = 80;
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+        doc.addImage(failure.image, 'JPEG', margin, y, imgWidth, imgHeight);
+        y += imgHeight + 10;
+    }
+
+    y += 10;
+});
         } 
 
         // Add footer
