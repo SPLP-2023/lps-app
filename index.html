@@ -251,6 +251,9 @@
             <div class="form-group">
                 <label for="siteAddress">Site Address:</label>
                 <textarea id="siteAddress" placeholder="Enter full site address" rows="3"></textarea>
+                <label for="buildingImage">Building Image (Cover Photo):</label>
+                <input type="file" id="buildingImage" accept="image/*" capture="environment" onchange="previewBuildingImage(event)">
+                <img id="buildingImagePreview" class="image-preview" style="display: none;" alt="Building preview">
             </div>
             <div class="form-group">
                 <label for="testKitNumber">Test Kit Number:</label>
@@ -267,7 +270,291 @@
         </div>
     </div>
     
-    <!-- Standards and Failures Section -->
+    <!-- System Description Section -->
+    <div class="section">
+        <h2>System Description</h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label>1. What is the ground type? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_tarmac" name="groundType" value="Tarmac">
+                        <label for="ground_tarmac">Tarmac</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_concrete" name="groundType" value="Concrete">
+                        <label for="ground_concrete">Concrete</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_grass" name="groundType" value="Grass/Soil">
+                        <label for="ground_grass">Grass/Soil</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_slabs" name="groundType" value="Slabs">
+                        <label for="ground_slabs">Slabs</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_paving" name="groundType" value="Block Paving">
+                        <label for="ground_paving">Block Paving</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="ground_other" name="groundType" value="Other" onchange="toggleOtherInput('ground_other_text', this)">
+                        <label for="ground_other">Other</label>
+                        <input type="text" id="ground_other_text" placeholder="Specify other ground type" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>2. Structure wall type? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_brick" name="wallType" value="Brick">
+                        <label for="wall_brick">Brick</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_render" name="wallType" value="Render">
+                        <label for="wall_render">Render</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_metal" name="wallType" value="Metal Clad">
+                        <label for="wall_metal">Metal Clad</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_stone" name="wallType" value="Stone Block">
+                        <label for="wall_stone">Stone Block</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_wooden" name="wallType" value="Wooden Clad">
+                        <label for="wall_wooden">Wooden Clad</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="wall_other" name="wallType" value="Other" onchange="toggleOtherInput('wall_other_text', this)">
+                        <label for="wall_other">Other</label>
+                        <input type="text" id="wall_other_text" placeholder="Specify other wall type" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>3. Roof type? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_membrane" name="roofType" value="Membrane">
+                        <label for="roof_membrane">Membrane</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_felt" name="roofType" value="Felt">
+                        <label for="roof_felt">Felt</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_tile" name="roofType" value="Tile">
+                        <label for="roof_tile">Tile</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_metal" name="roofType" value="Metal Sheet">
+                        <label for="roof_metal">Metal Sheet</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_thatch" name="roofType" value="Thatch">
+                        <label for="roof_thatch">Thatch</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="roof_other" name="roofType" value="Other" onchange="toggleOtherInput('roof_other_text', this)">
+                        <label for="roof_other">Other</label>
+                        <input type="text" id="roof_other_text" placeholder="Specify other roof type" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="structurePerimeter">4. Structure perimeter (meters):</label>
+                <input type="number" id="structurePerimeter" placeholder="Enter perimeter in meters" min="0" step="0.1">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>5. Air-termination type? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="air_external_cage" name="airTermType" value="External Faraday Cage">
+                        <label for="air_external_cage">External Faraday Cage</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="air_internal_cage" name="airTermType" value="Internal Faraday Cage">
+                        <label for="air_internal_cage">Internal Faraday Cage</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="air_eseat" name="airTermType" value="ESEAT">
+                        <label for="air_eseat">ESEAT</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="air_rolling" name="airTermType" value="Rolling Sphere">
+                        <label for="air_rolling">Rolling Sphere</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="air_other" name="airTermType" value="Other" onchange="toggleOtherInput('air_other_text', this)">
+                        <label for="air_other">Other</label>
+                        <input type="text" id="air_other_text" placeholder="Specify other air-termination type" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>6. Down Conductor Type? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="down_external" name="downConductorType" value="External">
+                        <label for="down_external">External</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="down_cavity" name="downConductorType" value="Cavity">
+                        <label for="down_cavity">Cavity</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="down_internal" name="downConductorType" value="Internal">
+                        <label for="down_internal">Internal</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="down_hvi" name="downConductorType" value="Isolated HVI">
+                        <label for="down_hvi">Isolated HVI</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="down_other" name="downConductorType" value="Other" onchange="toggleOtherInput('down_other_text', this)">
+                        <label for="down_other">Other</label>
+                        <input type="text" id="down_other_text" placeholder="Specify other down conductor type" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>7. Conductor sizes? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_25x3" name="conductorSize" value="25x3mm">
+                        <label for="size_25x3">25x3mm</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_8mm" name="conductorSize" value="8mm">
+                        <label for="size_8mm">8mm</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_hvi" name="conductorSize" value="HVI">
+                        <label for="size_hvi">HVI</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_20x3" name="conductorSize" value="20x3mm">
+                        <label for="size_20x3">20x3mm</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_50x3" name="conductorSize" value="50x3mm">
+                        <label for="size_50x3">50x3mm</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="size_other" name="conductorSize" value="Other" onchange="toggleOtherInput('size_other_text', this)">
+                        <label for="size_other">Other</label>
+                        <input type="text" id="size_other_text" placeholder="Specify other conductor size" style="display: none; margin-top: 5px;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>8. Conductor coating? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_pvc" name="conductorCoating" value="PVC">
+                        <label for="coating_pvc">PVC</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_bare" name="conductorCoating" value="Bare">
+                        <label for="coating_bare">Bare</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_brown" name="conductorCoating" value="Colour Brown">
+                        <label for="coating_brown">Colour - Brown</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_black" name="conductorCoating" value="Colour Black">
+                        <label for="coating_black">Colour - Black</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_grey" name="conductorCoating" value="Colour Grey">
+                        <label for="coating_grey">Colour - Grey</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_stone" name="conductorCoating" value="Colour Stone">
+                        <label for="coating_stone">Colour - Stone</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="coating_white" name="conductorCoating" value="Colour White">
+                        <label for="coating_white">Colour - White</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>9. SPD (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_present" name="spd" value="Present">
+                        <label for="spd_present">Present</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_unidentified" name="spd" value="Unidentified">
+                        <label for="spd_unidentified">Unidentified</label>
+                    </div>
+                </div>
+                
+                <label style="margin-top: 15px;">10. SPD Type (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_type1" name="spdType" value="Type-1">
+                        <label for="spd_type1">Type-1</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_type2" name="spdType" value="Type-2">
+                        <label for="spd_type2">Type-2</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_type3" name="spdType" value="Type-3">
+                        <label for="spd_type3">Type-3</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_combined" name="spdType" value="Combined Unit">
+                        <label for="spd_combined">Combined Unit</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>11. SPD Function (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_safe" name="spdFunction" value="Safe">
+                        <label for="spd_safe">Safe</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="spd_unsafe" name="spdFunction" value="Unsafe">
+                        <label for="spd_unsafe">Unsafe</label>
+                    </div>
+                </div>
+                
+                <label style="margin-top: 15px;">12. Main Equipotential Bond present? (Multiple selections allowed)</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bond_present" name="mainBond" value="Present">
+                        <label for="bond_present">Present</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bond_unidentified" name="mainBond" value="Unidentified">
+                        <label for="bond_unidentified">Unidentified</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="section">
         <h2>Standards and System Failures</h2>
         <label for="selectedStandard">Select Applicable Standard:</label>
@@ -445,6 +732,48 @@
         };
         
         let selectedFailures = [];
+        let buildingImageData = null;
+        
+        function previewBuildingImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    buildingImageData = e.target.result;
+                    const preview = document.getElementById('buildingImagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function toggleOtherInput(textId, checkbox) {
+            const textInput = document.getElementById(textId);
+            if (checkbox.checked) {
+                textInput.style.display = 'block';
+                textInput.focus();
+            } else {
+                textInput.style.display = 'none';
+                textInput.value = '';
+            }
+        }
+        
+        function getSelectedValues(groupName) {
+            const checkboxes = document.querySelectorAll(`input[name="${groupName}"]:checked`);
+            const values = [];
+            checkboxes.forEach(cb => {
+                if (cb.value === 'Other') {
+                    const otherInput = cb.parentElement.querySelector('input[type="text"]');
+                    if (otherInput && otherInput.value.trim()) {
+                        values.push(`Other: ${otherInput.value.trim()}`);
+                    }
+                } else {
+                    values.push(cb.value);
+                }
+            });
+            return values;
+        }
         
         function updateFailuresList() {
             const standard = document.getElementById('selectedStandard').value;
