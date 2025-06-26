@@ -894,148 +894,224 @@
                 reader.onload = function(e) {
                     const failure = selectedFailures.find(f => f.id === failureId);
                     if (failure) {
-                        failure.image = e.target.result;
+                        failure.image = e.target.re
                         updateSelectedFailuresDisplay();
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function removeFailure(failureId) {
-            selectedFailures = selectedFailures.filter(f => f.id !== failureId);
-            updateSelectedFailuresDisplay();
-            
-            // Uncheck the corresponding checkbox
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                if (selectedFailures.find(f => f.text === cb.getAttribute('onchange')?.match(/'([^']+)'/)?.[1])) {
-                    return;
-                }
-                cb.checked = false;
-            });
-        }
-        
-        function generatePDF() {
-            const doc = new jsPDF();
-            let y = 20;
-            const margin = 15;
-            const lineHeight = 8;
-            
-            function addText(title, value) {
-                doc.setFont('helvetica', 'bold');
-                doc.text(title + ":", margin, y);
-                doc.setFont('helvetica', 'normal');
-                doc.text(value || '-', margin + 50, y);
-                y += lineHeight;
-            }
-            
-            // Page 1: Header and Basic Info
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text("Lightning Protection System Inspection Report", margin, y);
-            y += 15;
-            
-            doc.setFontSize(11);
-            addText("Engineer", document.getElementById("engineerName").value);
-            addText("Site Address", document.getElementById("siteAddress").value);
-            addText("Date", document.getElementById("inspectionDate").value);
-            addText("Test Kit Number", document.getElementById("testKitNumber").value);
-            addText("Building Reference", document.getElementById("buildingReference").value);
-            addText("Weather Conditions", document.getElementById("weatherConditions").value);
-            addText("Standard Tested To", document.getElementById("selectedStandard").value);
-            
-            y += 10;
-            
-            // Failures section
-            if (selectedFailures.length > 0) {
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.text("System Failures and Non-Conformities", margin, y);
-                y += 10;
-                
-                selectedFailures.forEach((failure, index) => {
-                    if (y > 250) {
-                        doc.addPage();
-                        y = 20;
-                    }
-                    
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(`Failure ${index + 1}:`, margin, y);
-                    y += 6;
-                    
-                    doc.setFont('helvetica', 'normal');
-                    const failureLines = doc.splitTextToSize(failure.text, 170);
-                    failureLines.forEach(line => {
-                        doc.text(line, margin, y);
-                        y += 6;
-                    });
-                    
-                    if (failure.notes) {
-                        y += 3;
-                        doc.setFont('helvetica', 'bold');
-                        doc.text("Engineer Notes:", margin, y);
-                        y += 6;
-                        doc.setFont('helvetica', 'normal');
-                        const notesLines = doc.splitTextToSize(failure.notes, 170);
-                        notesLines.forEach(line => {
-                            doc.text(line, margin, y);
-                            y += 6;
-                        });
-                    }
-                    
-                    if (failure.image) {
-                        if (y > 200) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        const imgProps = doc.getImageProperties(failure.image);
-                        const imgWidth = 80;
-                        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-                        doc.addImage(failure.image, 'JPEG', margin, y, imgWidth, imgHeight);
-                        y += imgHeight + 10;
-                    }
-                    
-                    y += 10;
-                });
-            } else {
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.text("Inspection Result", margin, y);
-                y += 10;
-                
-                doc.setFont('helvetica', 'normal');
-                doc.text("No failures or non-conformities identified during this inspection.", margin, y);
-                y += 6;
-                doc.text("The lightning protection system appears to be compliant with the selected standard.", margin, y);
-            }
-            
-            // Add footer to all pages
-            addFooter(doc);
-            
-            doc.save("LPS_Inspection_Report.pdf");
-        }
-        
-        function addFooter(doc) {
-            const pageCount = doc.getNumberOfPages();
-            const footerText = "Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220";
-            
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'normal');
-                const lines = doc.splitTextToSize(footerText, 180);
-                let footerY = 290 - (lines.length - 1) * 4;
-                lines.forEach(line => {
-                    doc.text(line, 105, footerY, { align: 'center' });
-                    footerY += 4;
-                });
-            }
-        }
-        
-        // Set today's date by default
-        document.getElementById('inspectionDate').valueAsDate = new Date();
-    </script>
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function removeFailure(failureId) {
+            selectedFailures = selectedFailures.filter(f => f.id !== failureId);
+            updateSelectedFailuresDisplay();
+            
+            // Uncheck the corresponding checkbox
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (selectedFailures.find(f => f.text === cb.getAttribute('onchange')?.match(/'([^']+)'/)?.[1])) {
+                    return;
+                }
+                cb.checked = false;
+            });
+        }
+        
+function generatePDF() {
+    const doc = new jsPDF();
+    const margin = 15;
+    let y = 20; 
+
+    // ===== PAGE 1: Header + Building Image + Details =====
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text("Lightning Protection System Inspection Report", margin + 80, y);
+    y += 20; 
+
+    // Load site data
+    const engineer = document.getElementById("engineerName").value || "-";
+    const address = document.getElementById("siteAddress").value || "-";
+    const date = document.getElementById("inspectionDate").value || "-";
+    const testKit = document.getElementById("testKitNumber").value || "-";
+    const reference = document.getElementById("buildingReference").value || "-";
+    const weather = document.getElementById("weatherConditions").value || "-";
+    const standard = document.getElementById("selectedStandard").value || "-"; 
+
+    // Right side details
+    const rightX = 100;
+    const lineHeight = 10;
+    y = 40; 
+
+    doc.setFontSize(12);
+    const addField = (label, value) => {
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${label}:`, rightX, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(value, rightX + 40, y);
+        y += lineHeight;
+    }; 
+
+    addField("Engineer", engineer);
+    addField("Site Address", address);
+    addField("Date", date);
+    addField("Test Kit Number", testKit);
+    addField("Building Ref", reference);
+    addField("Weather", weather);
+    addField("Standard", standard); 
+
+    // Building image (circle with #00A0FF border)
+    if (buildingImageData) {
+        const imgSize = 60;
+        const imgX = -20; // to make it go off the left edge
+        const imgY = 50; 
+
+        // Circle outline
+        doc.setDrawColor(0, 160, 255);
+        doc.setLineWidth(1.5);
+        doc.circle(imgX + imgSize / 2 + 30, imgY + imgSize / 2, imgSize / 2 + 2); 
+
+        // Clipping workaround (canvas render + mask simulation)
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 200;
+        canvas.width = size;
+        canvas.height = size;
+        const img = new Image();
+        img.onload = () => {
+            ctx.clearRect(0, 0, size, size);
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(img, 0, 0, size, size);
+            const clippedData = canvas.toDataURL('image/jpeg'); 
+
+            doc.addImage(clippedData, 'JPEG', imgX, imgY, imgSize, imgSize);
+            finalizePages();
+        };
+        img.src = buildingImageData;
+    } else {
+        finalizePages();
+    } 
+
+    function finalizePages() {
+        // ===== PAGE 2: System Description Summary =====
+        doc.addPage();
+        y = 20;
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text("System Description Summary", margin, y);
+        y += 10; 
+
+        const sectionMap = {
+            "Ground Type": getSelectedValues("groundType"),
+            "Wall Type": getSelectedValues("wallType"),
+            "Roof Type": getSelectedValues("roofType"),
+            "Perimeter": document.getElementById("structurePerimeter").value + " meters",
+            "Air-Termination": getSelectedValues("airTermType"),
+            "Down Conductor": getSelectedValues("downConductorType"),
+            "Conductor Sizes": getSelectedValues("conductorSize"),
+            "Conductor Coating": getSelectedValues("conductorCoating"),
+            "SPD": getSelectedValues("spd"),
+            "SPD Type": getSelectedValues("spdType"),
+            "SPD Function": getSelectedValues("spdFunction"),
+            "Main Equipotential Bond": getSelectedValues("mainBond")
+        }; 
+
+        doc.setFontSize(11);
+        for (const [label, value] of Object.entries(sectionMap)) {
+            if (!value || (Array.isArray(value) && value.length === 0)) continue;
+            const lines = doc.splitTextToSize(`${label}: ${Array.isArray(value) ? value.join(", ") : value}`, 180);
+            lines.forEach(line => {
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, margin, y);
+                y += 8;
+            });
+        } 
+
+        // ===== PAGE 3+: Failures =====
+        if (selectedFailures.length > 0) {
+            doc.addPage();
+            y = 20;
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text("System Failures and Non-Conformities", margin, y);
+            y += 10; 
+
+            selectedFailures.forEach((failure, index) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                } 
+
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Failure ${index + 1}:`, margin, y);
+                y += 6; 
+
+                doc.setFont('helvetica', 'normal');
+                const failureLines = doc.splitTextToSize(failure.text, 170);
+                failureLines.forEach(line => {
+                    doc.text(line, margin, y);
+                    y += 6;
+                }); 
+
+                if (failure.notes) {
+                    y += 3;
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("Engineer Notes:", margin, y);
+                    y += 6;
+                    doc.setFont('helvetica', 'normal');
+                    const notesLines = doc.splitTextToSize(failure.notes, 170);
+                    notesLines.forEach(line => {
+                        doc.text(line, margin, y);
+                        y += 6;
+                    });
+                } 
+
+                if (failure.image) {
+                    if (y > 200) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    const imgProps = doc.getImageProperties(failure.image);
+                    const imgWidth = 80;
+                    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+                    doc.addImage(failure.image, 'JPEG', margin, y, imgWidth, imgHeight);
+                    y += imgHeight + 10;
+                } 
+
+                y += 10;
+            });
+        } 
+
+        // Add footer
+        addFooter(doc);
+        doc.save("LPS_Inspection_Report.pdf");
+    }
+}
+        
+        function addFooter(doc) {
+            const pageCount = doc.getNumberOfPages();
+            const footerText = "Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220";
+            
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                const lines = doc.splitTextToSize(footerText, 180);
+                let footerY = 290 - (lines.length - 1) * 4;
+                lines.forEach(line => {
+                    doc.text(line, 105, footerY, { align: 'center' });
+                    footerY += 4;
+                });
+            }
+        }
+        
+        // Set today's date by default
+        document.getElementById('inspectionDate').valueAsDate = new Date();
+    </script>
 </body>
 </html>
