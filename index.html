@@ -1,1042 +1,1648 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LPS Reporting Tool</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            padding: 20px;
-            max-width: 1000px;
-            margin: auto;
-            background: #f9f9f9;
-        } 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightning Protection Engineers Reporting Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .section h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        input[type="text"], input[type="date"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .earth-inputs {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .earth-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .earth-input-group input {
+            width: 120px;
+        }
+        
+        .failure-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .failure-item h4 {
+            color: #dc3545;
+            margin-bottom: 10px;
+        }
+        
+        .image-upload {
+            border: 2px dashed #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .image-upload:hover {
+            border-color: #007bff;
+        }
+        
+        .result-display {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .result-display h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+        
+        .standards-dropdown {
+            margin-bottom: 20px;
+        }
+        
+        .failures-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .failure-option {
+            padding: 10px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .failure-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .failure-option.selected {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        #generateReport {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            margin-top: 30px;
+            background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .collapsible-container {
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .collapsible-header {
+            width: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: none;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
+        
+        .collapsible-header:hover {
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+        
+        .collapsible-content {
+            display: none;
+            padding: 15px;
+            background-color: #fff;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .collapsible-content.active {
+            display: block;
+        }
+        
+        .reference-list {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .reference-list ul {
+            padding-left: 20px;
+        }
+        
+        .reference-list li {
+            margin-bottom: 5px;
+        }
 
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        } 
-
-        .section {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 6px;
-        } 
-
-        .section h2 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        } 
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-            color: #2c3e50;
-        } 
-
-        input, select, textarea, button {
-            display: block;
-            margin-bottom: 15px;
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        } 
-
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-        } 
-
-        .form-group {
-            flex: 1;
-        } 
-
-        button {
-            background: #3498db;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        } 
-
-        button:hover {
-            background: #2980b9;
-        } 
-
-        .btn-generate {
-            background: #27ae60;
-            font-size: 16px;
-            padding: 15px;
-        } 
-
-        .btn-generate:hover {
-            background: #229954;
-        } 
-
-        .standards-container {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-            margin-top: 20px;
-        } 
-
-        .standards-list {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-        } 
-
-        .standard-item {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-        } 
-
-        .standard-item:hover {
-            background: #e3f2fd;
-            border-color: #3498db;
-        } 
-
-        .standard-item.selected {
-            background: #3498db;
-            color: white;
-            border-color: #2980b9;
-        } 
-
-        .standard-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        } 
-
-        .standard-description {
-            font-size: 12px;
-            opacity: 0.8;
-        } 
-
-        .failures-container {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            min-height: 300px;
-        } 
-
-        .failure-category {
-            margin-bottom: 20px;
-        } 
-
-        .failure-category h4 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-            padding: 8px;
-            background: #ecf0f1;
-            border-radius: 4px;
-        } 
-
-        .failure-item {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        } 
-
-        .failure-item input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            margin-top: 2px;
-        } 
-
-        .failure-text {
-            flex: 1;
-            font-size: 14px;
-            line-height: 1.4;
-        } 
-
-        .selected-failures {
-            margin-top: 20px;
-        } 
-
-        .selected-failure {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 15px;
-        } 
-
-        .selected-failure h4 {
-            margin: 0 0 10px 0;
-            color: #856404;
-        } 
-
-        .remove-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 10px;
-        } 
-
-        .remove-btn:hover {
-            background: #c0392b;
-        } 
-
-        .hidden {
-            display: none;
-        } 
-
-        .image-upload {
-            margin-top: 10px;
-        } 
-
-        .image-preview {
-            max-width: 200px;
-            max-height: 150px;
-            margin-top: 10px;
-            border-radius: 4px;
-        } 
-
-        @media (max-width: 768px) {
-            .standards-container {
-                grid-template-columns: 1fr;
-            } 
-
-            .form-row {
-                flex-direction: column;
-            }
-        }
-    </style>
+        @media print {
+            .container {
+                box-shadow: none;
+                max-width: none;
+                margin: 0;
+                padding: 10px;
+            }
+            
+            button {
+                display: none;
+            }
+            
+            .reference-section {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Lightning Protection System Reporting Tool</h1> 
+    <div class="container">
+        <h1>⚡ Lightning Protection Engineers Reporting Tool</h1>
+        
+        <!-- Collapsible Reference Sections -->
+        <div class="section">
+            <h2>📚 Standards Reference Guide</h2>
+            
+            <div class="collapsible-container">
+                <button class="collapsible-header" onclick="toggleCollapsible('bs62305')">
+                    📋 BS EN 62305 Structure & Requirements
+                </button>
+                <div id="bs62305" class="collapsible-content">
+                    <div class="reference-list">
+                        <strong>BS EN 62305-1: General Principles</strong>
+                        <ul>
+                            <li>Lightning Protection Levels (LPL I-IV)</li>
+                            <li>Current division principles</li>
+                            <li>Lightning Protection Zones (LPZ 0A, 0B, 1, 2)</li>
+                            <li>Protection methods and concepts</li>
+                        </ul>
+                        <strong>BS EN 62305-2: Risk Management</strong>
+                        <ul>
+                            <li>Risk assessment procedures</li>
+                            <li>R1: Risk of loss of human life</li>
+                            <li>R2: Risk of loss of service to public</li>
+                            <li>R3: Risk of loss of cultural heritage</li>
+                            <li>R4: Risk of economic loss</li>
+                        </ul>
+                        <strong>BS EN 62305-3: Physical Damage to Structures</strong>
+                        <ul>
+                            <li>Air termination systems</li>
+                            <li>Down conductor systems</li>
+                            <li>Earth termination systems (Type A & B)</li>
+                            <li>Equipotential bonding</li>
+                            <li>Separation distances</li>
+                            <li>Material specifications</li>
+                        </ul>
+                        <strong>BS EN 62305-4: Electrical and Electronic Systems</strong>
+                        <ul>
+                            <li>Surge Protection Devices (SPDs)</li>
+                            <li>Lightning current arresters</li>
+                            <li>Overvoltage surge arresters</li>
+                            <li>Coordinated SPD protection</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Site Information Section -->
-    <div class="section">
-        <h2>Site Information</h2>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="engineerName">Engineer Name:</label>
-                <input type="text" id="engineerName" placeholder="Enter engineer's name">
-            </div>
-            <div class="form-group">
-                <label for="inspectionDate">Inspection Date:</label>
-                <input type="date" id="inspectionDate">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="siteAddress">Site Address:</label>
-                <textarea id="siteAddress" placeholder="Enter full site address" rows="3"></textarea>
-                <label for="buildingImage">Building Image (Cover Photo):</label>
-                <input type="file" id="buildingImage" accept="image/*" capture="environment" onchange="previewBuildingImage(event)">
-                <img id="buildingImagePreview" class="image-preview" style="display: none;" alt="Building preview">
-            </div>
-            <div class="form-group">
-                <label for="testKitNumber">Test Kit Number:</label>
-                <input type="text" id="testKitNumber" placeholder="Enter test kit number">
-                <label for="buildingReference">Building/Block Reference:</label>
-                <input type="text" id="buildingReference" placeholder="Enter building reference">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="weatherConditions">Weather Conditions:</label>
-                <input type="text" id="weatherConditions" placeholder="e.g., Dry, Damp, Wet">
-            </div>
-        </div>
-    </div> 
+            <div class="collapsible-container">
+                <button class="collapsible-header" onclick="toggleCollapsible('bs6651')">
+                    📋 BS 6651 Structure (Legacy Standard)
+                </button>
+                <div id="bs6651" class="collapsible-content">
+                    <div class="reference-list">
+                        <ul>
+                            <li>Section 1: Scope and definitions</li>
+                            <li>Section 2: Risk factor analysis</li>
+                            <li>Section 3: Air termination</li>
+                            <li>Section 4: Down conductors</li>
+                            <li>Section 5: Earth termination</li>
+                            <li>Section 6: Bonding and surge protection</li>
+                            <li>Section 7: Materials and construction</li>
+                            <li>Section 8: Installation requirements</li>
+                            <li>Section 9: Inspection and testing</li>
+                            <li>Section 10: Maintenance</li>
+                            <li>Annexes A-F: Additional guidance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Standards and Failures Section -->
-    <!-- System Description Section -->
-    <div class="section">
-        <h2>System Description</h2>
-        <div class="form-row">
-            <div class="form-group">
-                <label>1. What is the ground type? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_tarmac" name="groundType" value="Tarmac">
-                        <label for="ground_tarmac">Tarmac</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_concrete" name="groundType" value="Concrete">
-                        <label for="ground_concrete">Concrete</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_grass" name="groundType" value="Grass/Soil">
-                        <label for="ground_grass">Grass/Soil</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_slabs" name="groundType" value="Slabs">
-                        <label for="ground_slabs">Slabs</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_paving" name="groundType" value="Block Paving">
-                        <label for="ground_paving">Block Paving</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ground_other" name="groundType" value="Other" onchange="toggleOtherInput('ground_other_text', this)">
-                        <label for="ground_other">Other</label>
-                        <input type="text" id="ground_other_text" placeholder="Specify other ground type" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>2. Structure wall type? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_brick" name="wallType" value="Brick">
-                        <label for="wall_brick">Brick</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_render" name="wallType" value="Render">
-                        <label for="wall_render">Render</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_metal" name="wallType" value="Metal Clad">
-                        <label for="wall_metal">Metal Clad</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_stone" name="wallType" value="Stone Block">
-                        <label for="wall_stone">Stone Block</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_wooden" name="wallType" value="Wooden Clad">
-                        <label for="wall_wooden">Wooden Clad</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="wall_other" name="wallType" value="Other" onchange="toggleOtherInput('wall_other_text', this)">
-                        <label for="wall_other">Other</label>
-                        <input type="text" id="wall_other_text" placeholder="Specify other wall type" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>3. Roof type? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_membrane" name="roofType" value="Membrane">
-                        <label for="roof_membrane">Membrane</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_felt" name="roofType" value="Felt">
-                        <label for="roof_felt">Felt</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_tile" name="roofType" value="Tile">
-                        <label for="roof_tile">Tile</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_metal" name="roofType" value="Metal Sheet">
-                        <label for="roof_metal">Metal Sheet</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_thatch" name="roofType" value="Thatch">
-                        <label for="roof_thatch">Thatch</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="roof_other" name="roofType" value="Other" onchange="toggleOtherInput('roof_other_text', this)">
-                        <label for="roof_other">Other</label>
-                        <input type="text" id="roof_other_text" placeholder="Specify other roof type" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="structurePerimeter">4. Structure perimeter (meters):</label>
-                <input type="number" id="structurePerimeter" placeholder="Enter perimeter in meters" min="0" step="0.1">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>5. Air-termination type? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="air_external_cage" name="airTermType" value="External Faraday Cage">
-                        <label for="air_external_cage">External Faraday Cage</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="air_internal_cage" name="airTermType" value="Internal Faraday Cage">
-                        <label for="air_internal_cage">Internal Faraday Cage</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="air_eseat" name="airTermType" value="ESEAT">
-                        <label for="air_eseat">ESEAT</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="air_rolling" name="airTermType" value="Rolling Sphere">
-                        <label for="air_rolling">Rolling Sphere</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="air_other" name="airTermType" value="Other" onchange="toggleOtherInput('air_other_text', this)">
-                        <label for="air_other">Other</label>
-                        <input type="text" id="air_other_text" placeholder="Specify other air-termination type" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>6. Down Conductor Type? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="down_external" name="downConductorType" value="External">
-                        <label for="down_external">External</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="down_cavity" name="downConductorType" value="Cavity">
-                        <label for="down_cavity">Cavity</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="down_internal" name="downConductorType" value="Internal">
-                        <label for="down_internal">Internal</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="down_hvi" name="downConductorType" value="Isolated HVI">
-                        <label for="down_hvi">Isolated HVI</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="down_other" name="downConductorType" value="Other" onchange="toggleOtherInput('down_other_text', this)">
-                        <label for="down_other">Other</label>
-                        <input type="text" id="down_other_text" placeholder="Specify other down conductor type" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>7. Conductor sizes? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_25x3" name="conductorSize" value="25x3mm">
-                        <label for="size_25x3">25x3mm</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_8mm" name="conductorSize" value="8mm">
-                        <label for="size_8mm">8mm</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_hvi" name="conductorSize" value="HVI">
-                        <label for="size_hvi">HVI</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_20x3" name="conductorSize" value="20x3mm">
-                        <label for="size_20x3">20x3mm</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_50x3" name="conductorSize" value="50x3mm">
-                        <label for="size_50x3">50x3mm</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="size_other" name="conductorSize" value="Other" onchange="toggleOtherInput('size_other_text', this)">
-                        <label for="size_other">Other</label>
-                        <input type="text" id="size_other_text" placeholder="Specify other conductor size" style="display: none; margin-top: 5px;">
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>8. Conductor coating? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_pvc" name="conductorCoating" value="PVC">
-                        <label for="coating_pvc">PVC</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_bare" name="conductorCoating" value="Bare">
-                        <label for="coating_bare">Bare</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_brown" name="conductorCoating" value="Colour Brown">
-                        <label for="coating_brown">Colour - Brown</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_black" name="conductorCoating" value="Colour Black">
-                        <label for="coating_black">Colour - Black</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_grey" name="conductorCoating" value="Colour Grey">
-                        <label for="coating_grey">Colour - Grey</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_stone" name="conductorCoating" value="Colour Stone">
-                        <label for="coating_stone">Colour - Stone</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coating_white" name="conductorCoating" value="Colour White">
-                        <label for="coating_white">Colour - White</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>9. SPD (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_present" name="spd" value="Present">
-                        <label for="spd_present">Present</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_unidentified" name="spd" value="Unidentified">
-                        <label for="spd_unidentified">Unidentified</label>
-                    </div>
-                </div>
-                
-                <label style="margin-top: 15px;">10. SPD Type (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_type1" name="spdType" value="Type-1">
-                        <label for="spd_type1">Type-1</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_type2" name="spdType" value="Type-2">
-                        <label for="spd_type2">Type-2</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_type3" name="spdType" value="Type-3">
-                        <label for="spd_type3">Type-3</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_combined" name="spdType" value="Combined Unit">
-                        <label for="spd_combined">Combined Unit</label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>11. SPD Function (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_safe" name="spdFunction" value="Safe">
-                        <label for="spd_safe">Safe</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="spd_unsafe" name="spdFunction" value="Unsafe">
-                        <label for="spd_unsafe">Unsafe</label>
-                    </div>
-                </div>
-                
-                <label style="margin-top: 15px;">12. Main Equipotential Bond present? (Multiple selections allowed)</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="bond_present" name="mainBond" value="Present">
-                        <label for="bond_present">Present</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="bond_unidentified" name="mainBond" value="Unidentified">
-                        <label for="bond_unidentified">Unidentified</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="section">
-        <h2>Standards and System Failures</h2>
-        <label for="selectedStandard">Select Applicable Standard:</label>
-        <select id="selectedStandard" onchange="updateFailuresList()">
-            <option value="">-- Select Standard --</option>
-            <option value="BSEN62305">BS EN 62305:2011 (Current Standard)</option>
-            <option value="BS6651">BS 6651:1999 (Legacy Standard)</option>
-            <option value="CP326">CP326 (Historical Standard)</option>
-            <option value="NFC17102">NF C 17-102:2011 (French Standard)</option>
-        </select> 
+            <div class="collapsible-container">
+                <button class="collapsible-header" onclick="toggleCollapsible('failures')">
+                    📋 Common System Failures & Test Requirements
+                </button>
+                <div id="failures" class="collapsible-content">
+                    <div class="reference-list">
+                        <strong>Typical Failures:</strong>
+                        <ul>
+                            <li>Earth resistance above acceptable limits (>10Ω typically)</li>
+                            <li>Poor continuity between components</li>
+                            <li>Corrosion of conductors/connections</li>
+                            <li>Missing or damaged air terminals</li>
+                            <li>Inadequate equipotential bonding</li>
+                            <li>Non-compliant materials used</li>
+                            <li>Insufficient separation distances</li>
+                            <li>SPD failures or missing devices</li>
+                        </ul>
+                        <strong>Test Requirements:</strong>
+                        <ul>
+                            <li>Visual inspection (annual minimum)</li>
+                            <li>Earth resistance testing</li>
+                            <li>Continuity testing</li>
+                            <li>SPD functional testing</li>
+                            <li>Documentation verification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="standards-container">
-            <div>
-                <h3>Standard Information</h3>
-                <div id="standardInfo" class="standards-list">
-                    <p style="text-align: center; color: #666; margin-top: 50px;">Select a standard to view details</p>
-                </div>
-            </div> 
+        <!-- Basic Information Section -->
+        <div class="section">
+            <h2>📝 Site Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="siteAddress">Site Address:</label>
+                    <textarea id="siteAddress" rows="3" placeholder="Enter full site address..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="testDate">Date:</label>
+                    <input type="date" id="testDate">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="engineerName">Engineer Name:</label>
+                    <input type="text" id="engineerName" placeholder="Enter engineer name...">
+                </div>
+                <div class="form-group">
+                    <label for="testKitRef">Test Kit Reference:</label>
+                    <input type="text" id="testKitRef" placeholder="Enter test kit reference...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="buildingImage">Building Image (Cover Page):</label>
+                <div class="image-upload" onclick="document.getElementById('buildingImageFile').click()">
+                    <input type="file" id="buildingImageFile" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'buildingImagePreview')">
+                    <div id="buildingImagePreview">Click to upload building image</div>
+                </div>
+            </div>
+        </div>
 
-            <div>
-                <h3>Available Failures/Non-Conformities</h3>
-                <div id="failuresContainer" class="failures-container">
-                    <p style="text-align: center; color: #666; margin-top: 100px;">Select a standard to view applicable failures</p>
-                </div>
-            </div>
-        </div> 
+        <!-- Standards Selection -->
+        <div class="section">
+            <h2>📖 Standard Selection & Failures</h2>
+            <div class="form-group standards-dropdown">
+                <label for="standard">Select Standard:</label>
+                <select id="standard" onchange="updateFailuresList()">
+                    <option value="">Select a standard...</option>
+                    <option value="BS EN 62305">BS EN 62305 (Current Standard)</option>
+                    <option value="BS 6651">BS 6651 (Legacy Standard)</option>
+                    <option value="CP 326">CP 326 (Historical Standard)</option>
+                    <option value="NF C 17-102">NF C 17-102:2011 (ESE Systems)</option>
+                </select>
+            </div>
+            <div id="failuresContainer" class="hidden">
+                <label>Available Failures for Selected Standard:</label>
+                <div id="failuresList" class="failures-list"></div>
+            </div>
+        </div>
 
-        <div id="selectedFailures" class="selected-failures hidden">
-            <h3>Selected Failures</h3>
-        </div>
-    </div> 
+        <!-- Selected Failures -->
+        <div class="section">
+            <h2>⚠️ Selected Failures & Comments</h2>
+            <div id="selectedFailures"></div>
+        </div>
 
-    <!-- Generate Report Section -->
-    <div class="section">
-        <button class="btn-generate" onclick="generatePDF()">Generate PDF Report</button>
-    </div> 
+        <!-- Surge Protection -->
+        <div class="section">
+            <h2>🛡️ Surge Protection Details</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="surgeInstalled">Surge Protection Installed:</label>
+                    <select id="surgeInstalled">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="surgeType">Type:</label>
+                    <input type="text" id="surgeType" placeholder="e.g., Type 1, Type 2, Combined...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="surgeSafe">Is it Safe:</label>
+                <select id="surgeSafe">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Requires Further Investigation">Requires Further Investigation</option>
+                </select>
+            </div>
+        </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        const { jsPDF } = window.jspdf; 
+        <!-- Earth Resistance Testing -->
+        <div class="section">
+            <h2>🌍 Earth Resistance Testing</h2>
+            <div class="form-group">
+                <label for="numEarths">Number of Earths Tested:</label>
+                <input type="number" id="numEarths" min="0" max="20" onchange="generateEarthInputs()">
+            </div>
+            <div id="earthInputs" class="earth-inputs"></div>
+            <div id="earthResult" class="result-display hidden">
+                <h4>Overall Earth Resistance:</h4>
+                <div id="overallResistance"></div>
+            </div>
+            <div class="form-group">
+                <label for="earthImages">Earth Test Images:</label>
+                <div class="image-upload" onclick="document.getElementById('earthImagesFile').click()">
+                    <input type="file" id="earthImagesFile" accept="image/*" multiple style="display: none;" onchange="handleMultipleImageUpload(this, 'earthImagesPreview')">
+                    <div id="earthImagesPreview">Click to upload earth test images</div>
+                </div>
+            </div>
+        </div>
 
-        const standardsInfo = {
-            'BSEN62305': {
-                title: 'BS EN 62305:2011',
-                subtitle: 'Protection against lightning',
-                parts: [
-                    'Part 1: General principles',
-                    'Part 2: Risk management', 
-                    'Part 3: Physical damage to structures and life hazard',
-                    'Part 4: Electrical and electronic systems within structures'
-                ],
-                keyAreas: [
-                    'Protection measures and LPS design',
-                    'Air-termination systems',
-                    'Down-conductor systems', 
-                    'Earth-termination systems',
-                    'Protection levels (I, II, III, IV)',
-                    'Inspection and maintenance requirements'
-                ]
-            },
-            'BS6651': {
-                title: 'BS 6651:1999',
-                subtitle: 'Code of practice for protection of structures against lightning',
-                parts: [
-                    'Lightning conductor systems',
-                    'Protection of structures',
-                    'Installation requirements',
-                    'Testing and maintenance'
-                ],
-                keyAreas: [
-                    'Material specifications',
-                    'Earth electrode systems',
-                    'Conductor sizing and installation',
-                    'Inspection procedures'
-                ]
-            },
-            'CP326': {
-                title: 'CP326',
-                subtitle: 'The Protection of Structures Against Lightning (Historical)',
-                parts: [
-                    'Basic lightning protection principles',
-                    'Simple conductor systems',
-                    'Earth electrode requirements'
-                ],
-                keyAreas: [
-                    'Traditional lightning rod systems',
-                    'Basic earthing requirements',
-                    'Superseded by BS 6651'
-                ]
-            },
-            'NFC17102': {
-                title: 'NF C 17-102:2011',
-                subtitle: 'Protection contre la foudre (French Standard)',
-                parts: [
-                    'Similar structure to BS EN 62305',
-                    'Protection levels and risk assessment',
-                    'Installation and testing requirements'
-                ],
-                keyAreas: [
-                    'French regulatory compliance',
-                    'Risk assessment methodologies',
-                    'Maintenance schedules'
-                ]
-            }
-        }; 
+        <!-- General Comments Section -->
+        <div class="section">
+            <h2>💬 General Comments</h2>
+            <div class="form-group">
+                <label for="generalComments">Additional Comments:</label>
+                <textarea id="generalComments" rows="4" placeholder="Enter any additional observations, recommendations, or general comments about the lightning protection system..."></textarea>
+            </div>
+        </div>
 
-        const failuresData = {
-            'BSEN62305': {
-                'Air-Termination System': [
-                    'Air-Termination System, Part 3, Section 5.2 - Insufficient protection coverage/angles exceeded',
-                    'Air-Termination System, Part 3, Section 5.2 - Inadequate conductor cross-section (<50mm² Cu)',
-                    'Air-Termination System, Part 3, Section 5.2 - Corrosion or physical damage to conductors',
-                    'Air-Termination System, Part 3, Section 5.2 - Poor bonding of metallic roof elements',
-                    'Air-Termination System, Part 3, Section 5.2 - Inadequate height above roof level'
-                ],
-                'Down-Conductor System': [
-                    'Down-Conductor System, Part 3, Section 5.3 - Insufficient number for structure perimeter',
-                    'Down-Conductor System, Part 3, Section 5.3 - Excessive spacing between conductors',
-                    'Down-Conductor System, Part 3, Section 5.3 - Sharp bends (radius <20cm)',
-                    'Down-Conductor System, Part 3, Section 5.3 - Inadequate separation from structure',
-                    'Down-Conductor System, Part 3, Section 5.3 - Missing mechanical protection'
-                ],
-                'Earth-Termination System': [
-                    'Earth-Termination System, Part 3, Section 5.4 - High earth resistance readings',
-                    'Earth-Termination System, Part 3, Section 5.4 - Insufficient electrode length',
-                    'Earth-Termination System, Part 3, Section 5.4 - Poor connections or corrosion',
-                    'Earth-Termination System, Part 3, Section 5.4 - Missing structural steelwork bonding'
-                ],
-                'General System Requirements': [
-                    'General System Requirements, Part 4 - Missing surge protection devices',
-                    'General System Requirements, Part 3 - Inadequate equipotential bonding',
-                    'General System Requirements, Part 2 - System not meeting protection level requirements',
-                    'General System Requirements, Part 3, Annex E - No evidence of annual inspection',
-                    'General System Requirements, General - Missing system drawings/certificates'
-                ]
-            },
-            'BS6651': {
-                'Lightning Conductor System': [
-                    'Lightning Conductor System, Section 4 - Inadequate height protection',
-                    'Lightning Conductor System, Section 4 - Insufficient cross-sectional area',
-                    'Lightning Conductor System, Section 4 - Corrosion or physical damage',
-                    'Lightning Conductor System, Section 4 - Poor workmanship in joints'
-                ],
-                'Down-Conductor System': [
-                    'Down-Conductor System, Section 5 - Improper installation path',
-                    'Down-Conductor System, Section 5 - Inadequate fixings and supports',
-                    'Down-Conductor System, Section 5 - Missing mechanical protection'
-                ],
-                'Earth Electrode System': [
-                    'Earth Electrode System, Section 6 - High resistance readings (>10Ω)',
-                    'Earth Electrode System, Section 6 - Insufficient electrode length',
-                    'Earth Electrode System, Section 6 - Poor earth connections'
-                ],
-                'General Requirements': [
-                    'General Requirements, Section 8 - Missing metallic service bonding',
-                    'General Requirements, Section 9 - No test results available',
-                    'General Requirements, Section 3 - Non-compliant material specifications'
-                ]
-            },
-            'CP326': [
-                'Lightning rod: Inadequate protection cone',
-                'Conductor: Insufficient gauge for application',
-                'Earth connection: High resistance readings',
-                'Installation: Poor workmanship standards',
-                'Maintenance: No inspection records available'
-            ],
-            'NFC17102': [
-                'Système de capture: Protection insuffisante',
-                'Conducteurs de descente: Nombre insuffisant selon périmètre',
-                'Prise de terre: Résistance élevée',
-                'Liaisons équipotentielles: Manquantes ou défaillantes',
-                'Parafoudres: Non conformes aux exigences',
-                'Contrôles: Absence de vérifications périodiques'
-            ]
-        }; 
+        <!-- Logo Upload Section -->
+        <div class="section">
+            <h2>🏢 Company Branding</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="coverLogo">Cover Page Logo (Large):</label>
+                    <div class="image-upload" onclick="document.getElementById('coverLogoFile').click()">
+                        <input type="file" id="coverLogoFile" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'coverLogoPreview')">
+                        <div id="coverLogoPreview">Click to upload cover page logo</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="headerLogo">Header Logo (Small):</label>
+                    <div class="image-upload" onclick="document.getElementById('headerLogoFile').click()">
+                        <input type="file" id="headerLogoFile" accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'headerLogoPreview')">
+                        <div id="headerLogoPreview">Click to upload header logo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        let selectedFailures = [];
-        let buildingImageData = null;
-        
-        function previewBuildingImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    buildingImageData = e.target.result;
-                    const preview = document.getElementById('buildingImagePreview');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function toggleOtherInput(textId, checkbox) {
-            const textInput = document.getElementById(textId);
-            if (checkbox.checked) {
-                textInput.style.display = 'block';
-                textInput.focus();
-            } else {
-                textInput.style.display = 'none';
-                textInput.value = '';
-            }
-        }
-        
-        function getSelectedValues(groupName) {
-            const checkboxes = document.querySelectorAll(`input[name="${groupName}"]:checked`);
-            const values = [];
-            checkboxes.forEach(cb => {
-                if (cb.value === 'Other') {
-                    const otherInput = cb.parentElement.querySelector('input[type="text"]');
-                    if (otherInput && otherInput.value.trim()) {
-                        values.push(`Other: ${otherInput.value.trim()}`);
-                    }
-                } else {
-                    values.push(cb.value);
-                }
-            });
-            return values;
-        } 
+        <!-- Final Comments Section -->
+        <div class="section">
+            <h2>📝 Final Summary Comments</h2>
+            <div class="form-group">
+                <label for="finalComments">Summary & Recommendations:</label>
+                <textarea id="finalComments" rows="4" placeholder="Enter final summary, conclusions, and recommendations for the lightning protection system..."></textarea>
+            </div>
+        </div>
 
-        function updateFailuresList() {
-            const standard = document.getElementById('selectedStandard').value;
-            const standardInfoDiv = document.getElementById('standardInfo');
-            const failuresContainer = document.getElementById('failuresContainer'); 
+        <!-- Generate Report Button -->
+        <button id="generateReport" onclick="generatePDF()">🎯 Generate Professional PDF Report</button>
+    </div>
 
-            if (standard && standardsInfo[standard]) {
-                // Update standard information
-                const info = standardsInfo[standard];
-                standardInfoDiv.innerHTML = `
-                    <div class="standard-item selected">
-                        <div class="standard-title">${info.title}</div>
-                        <div class="standard-description">${info.subtitle}</div>
-                    </div>
-                    <div style="margin-top: 15px;">
-                        <h4>Parts:</h4>
-                        ${info.parts.map(part => `<div style="margin: 5px 0; padding-left: 10px;">• ${part}</div>`).join('')}
-                        <h4 style="margin-top: 15px;">Key Areas:</h4>
-                        ${info.keyAreas.map(area => `<div style="margin: 5px 0; padding-left: 10px;">• ${area}</div>`).join('')}
-                    </div>
-                `; 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Comprehensive failure definitions by standard
+        const standardFailures = {
+            "BS EN 62305": [
+                "Earth resistance exceeds 10Ω requirement",
+                "Poor continuity between air terminals and down conductors",
+                "Air terminals not meeting LPL requirements",
+                "Down conductors not following shortest route to earth",
+                "Inadequate separation distance from metalwork",
+                "Missing equipotential bonding connections",
+                "Non-compliant conductor materials or dimensions",
+                "Earth termination system Type A/B non-compliance",
+                "Missing or inadequate surge protection devices",
+                "SPD coordination issues between protection levels",
+                "Insufficient lightning protection zones implementation",
+                "Risk assessment not conducted or outdated",
+                "Missing bonds to external metalwork",
+                "Corrosion exceeding acceptable limits",
+                "Mechanical damage to system components",
+                "Installation not meeting Class I/II/III/IV requirements",
+                "Missing test clamps or inspection facilities",
+                "Documentation incomplete or missing",
+                "Non-compliance with manufacturer specifications",
+                "Environmental protection inadequate"
+            ],
+            "BS 6651": [
+                "Earth electrode resistance above 10Ω",
+                "Continuity failure in conductor network",
+                "Air terminal spacing exceeds 20m/25m limits",
+                "Down conductor route not direct to earth",
+                "Missing side-flash protection bonds",
+                "Conductor cross-sectional area insufficient",
+                "Earth electrode depth/installation inadequate",
+                "Joint resistance exceeding 0.05Ω",
+                "Missing surge diverter protection",
+                "Corrosion affecting system integrity",
+                "Mechanical protection inadequate",
+                "Test facilities not provided",
+                "Risk factor calculation not meeting 10⁻⁵ limit",
+                "Material specifications non-compliant",
+                "Missing bonds to metallic services",
+                "Down conductor count insufficient for building size",
+                "Air terminal height inadequate for protection",
+                "Missing isolation joints where required",
+                "Installation records incomplete",
+                "Maintenance schedule not followed"
+            ],
+            "CP 326": [
+                "Non-compliance with basic protection principles",
+                "Inadequate conductor sizing for historic requirements",
+                "Missing earth connections",
+                "Poor workmanship in installations",
+                "Material degradation beyond acceptable limits",
+                "Insufficient protection coverage",
+                "Missing documentation from original installation",
+                "Non-standard component usage",
+                "Inadequate maintenance records",
+                "System modifications without proper design review"
+            ],
+            "NF C 17-102": [
+                "ESE efficiency (ΔT) not verified or inadequate",
+                "Protection radius calculation errors",
+                "Air terminal not meeting ESE testing requirements",
+                "Down conductor installation non-compliant",
+                "Earth resistance exceeding French standard limits",
+                "ESE device not certified to NF C 17-102",
+                "Missing surge protection coordination",
+                "Equipotential bonding inadequate",
+                "Installation height calculations incorrect",
+                "Early streamer emission timing not verified",
+                "Protection level selection inappropriate",
+                "Missing risk assessment per French requirements",
+                "EMC compliance issues with electronic ESE devices",
+                "Mechanical strength testing not verified",
+                "Current withstand capability not proven",
+                "Protection zone overlap insufficient",
+                "Installation not meeting manufacturer requirements",
+                "Missing periodic testing verification",
+                "Documentation not in French standard format",
+                "System commissioning incomplete"
+            ]
+        };
 
-                // Update failures list
-                if (failuresData[standard]) {
-                    let failuresHtml = '';
-                    const failures = failuresData[standard]; 
+        let selectedFailuresList = [];
+        let earthResistances = [];
+        let uploadedImages = {};
 
-                    if (Array.isArray(failures)) {
-                        // For simple arrays (CP326, NFC17102)
-                        failuresHtml = failures.map((failure, index) => `
-                            <div class="failure-item">
-                                <input type="checkbox" id="failure_${index}" onchange="toggleFailure('${failure}', this.checked)">
-                                <div class="failure-text">${failure}</div>
-                            </div>
-                        `).join('');
-                    } else {
-                        // For categorized failures (BSEN62305, BS6651)
-                        for (const [category, categoryFailures] of Object.entries(failures)) {
-                            failuresHtml += `
-                                <div class="failure-category">
-                                    <h4>${category}</h4>
-                                    ${categoryFailures.map((failure, index) => `
-                                        <div class="failure-item">
-                                            <input type="checkbox" id="failure_${category}_${index}" onchange="toggleFailure('${failure}', this.checked)">
-                                            <div class="failure-text">${failure}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            `;
-                        }
-                    } 
+        // Set today's date as default
+        document.getElementById('testDate').valueAsDate = new Date();
 
-                    failuresContainer.innerHTML = failuresHtml;
-                } else {
-                    failuresContainer.innerHTML = '<p style="text-align: center; color: #666; margin-top: 100px;">No failures data available for this standard</p>';
-                }
-            } else {
-                standardInfoDiv.innerHTML = '<p style="text-align: center; color: #666; margin-top: 50px;">Select a standard to view details</p>';
-                failuresContainer.innerHTML = '<p style="text-align: center; color: #666; margin-top: 100px;">Select a standard to view applicable failures</p>';
-            } 
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('active');
+        }
 
-            // Clear selected failures when changing standards
-            selectedFailures = [];
-            updateSelectedFailuresDisplay();
-        } 
+        function updateFailuresList() {
+            const standard = document.getElementById('standard').value;
+            const container = document.getElementById('failuresContainer');
+            const failuresList = document.getElementById('failuresList');
+            
+            if (standard && standardFailures[standard]) {
+                container.classList.remove('hidden');
+                failuresList.innerHTML = '';
+                
+                standardFailures[standard].forEach((failure, index) => {
+                    const failureDiv = document.createElement('div');
+                    failureDiv.className = 'failure-option';
+                    failureDiv.textContent = failure;
+                    failureDiv.onclick = () => selectFailure(failure, failureDiv);
+                    failuresList.appendChild(failureDiv);
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
 
-        function toggleFailure(failureText, isSelected) {
-            if (isSelected) {
-                if (!selectedFailures.find(f => f.text === failureText)) {
-                    selectedFailures.push({
-                        id: Date.now() + Math.random(),
-                        text: failureText,
-                        notes: '',
-                        image: null
-                    });
-                }
-            } else {
-                selectedFailures = selectedFailures.filter(f => f.text !== failureText);
-            }
-            updateSelectedFailuresDisplay();
-        } 
+        function selectFailure(failure, element) {
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedFailuresList = selectedFailuresList.filter(f => f.failure !== failure);
+            } else {
+                element.classList.add('selected');
+                selectedFailuresList.push({
+                    failure: failure,
+                    comment: '',
+                    image: null
+                });
+            }
+            updateSelectedFailures();
+        }
 
-        function updateSelectedFailuresDisplay() {
-            const container = document.getElementById('selectedFailures'); 
+        function updateSelectedFailures() {
+            const container = document.getElementById('selectedFailures');
+            container.innerHTML = '';
+            
+            selectedFailuresList.forEach((item, index) => {
+                const failureDiv = document.createElement('div');
+                failureDiv.className = 'failure-item';
+                failureDiv.innerHTML = `
+                    <h4>${item.failure}</h4>
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea onchange="updateFailureComment(${index}, this.value)" placeholder="Add detailed comments about this failure...">${item.comment}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image:</label>
+                        <div class="image-upload" onclick="document.getElementById('failureImage${index}').click()">
+                            <input type="file" id="failureImage${index}" accept="image/*" style="display: none;" onchange="handleFailureImage(${index}, this)">
+                            <div id="failureImagePreview${index}">${item.image ? 'Image uploaded' : 'Click to upload image'}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(failureDiv);
+            });
+        }
 
-            if (selectedFailures.length === 0) {
-                container.classList.add('hidden');
-                return;
-            } 
+        function updateFailureComment(index, comment) {
+            selectedFailuresList[index].comment = comment;
+        }
 
-            container.classList.remove('hidden');
-            const failuresHtml = selectedFailures.map(failure => `
-                <div class="selected-failure">
-                    <h4>${failure.text}</h4>
-                    <label>Engineer Notes:</label>
-                    <textarea placeholder="Add specific notes and recommendations..." onchange="updateFailureNotes(${failure.id}, this.value)">${failure.notes}</textarea>
-                    <label>Photo Evidence:</label>
-                    <input type="file" accept="image/*" capture="environment" onchange="handleImageUpload(${failure.id}, event)" class="image-upload">
-                    ${failure.image ? `<img src="${failure.image}" class="image-preview" alt="Evidence photo">` : ''}
-                    <button class="remove-btn" onclick="removeFailure(${failure.id})">Remove Failure</button>
-                </div>
-            `).join(''); 
+        function handleFailureImage(index, input) {
+            if (input.files[0]) {
+                const file = input.files[0];
+                selectedFailuresList[index].image = file;
+                
+                // Read the image data
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFailuresList[index].imageData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                document.getElementById(`failureImagePreview${index}`).textContent = 'Image uploaded';
+            }
+        }
 
-            container.innerHTML = '<h3>Selected Failures</h3>' + failuresHtml;
-        } 
+        function generateEarthInputs() {
+            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
+            const container = document.getElementById('earthInputs');
+            
+            if (numEarths > 0) {
+                container.style.display = 'block';
+                container.innerHTML = '<h4>Enter Earth Resistance Values (Ω):</h4>';
+                
+                for (let i = 1; i <= numEarths; i++) {
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'earth-input-group';
+                    inputGroup.innerHTML = `
+                        <label>Earth ${i}:</label>
+                        <input type="number" step="0.01" min="0" onchange="updateEarthResistance(${i-1}, this.value)" placeholder="0.00">
+                        <span>Ω</span>
+                    `;
+                    container.appendChild(inputGroup);
+                }
+                earthResistances = new Array(numEarths).fill(0);
+            } else {
+                container.style.display = 'none';
+                document.getElementById('earthResult').classList.add('hidden');
+            }
+        }
 
-        function updateFailureNotes(failureId, notes) {
-            const failure = selectedFailures.find(f => f.id === failureId);
-            if (failure) {
-                failure.notes = notes;
-            }
-        } 
+        function updateEarthResistance(index, value) {
+            earthResistances[index] = parseFloat(value) || 0;
+            calculateOverallResistance();
+        }
 
-        function handleImageUpload(failureId, event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const failure = selectedFailures.find(f => f.id === failureId);
-                    if (failure) {
-                        failure.image = e.target.result;
-                        updateSelectedFailuresDisplay();
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        } 
+        function calculateOverallResistance() {
+            if (earthResistances.length > 0 && earthResistances.some(r => r > 0)) {
+                // Parallel resistance formula: 1/RT = 1/R1 + 1/R2 + ... + 1/Rn
+                const validResistances = earthResistances.filter(r => r > 0);
+                const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
+                const overallResistance = 1 / reciprocalSum;
+                
+                document.getElementById('earthResult').classList.remove('hidden');
+                document.getElementById('overallResistance').innerHTML = `
+                    <strong>${overallResistance.toFixed(3)} Ω</strong>
+                    <br><small>Calculated from ${validResistances.length} earth electrode(s)</small>
+                `;
+            } else {
+                document.getElementById('earthResult').classList.add('hidden');
+            }
+        }
 
-        function removeFailure(failureId) {
-            selectedFailures = selectedFailures.filter(f => f.id !== failureId);
-            updateSelectedFailuresDisplay(); 
+        function handleImageUpload(input, previewId) {
+            if (input.files[0]) {
+                const file = input.files[0];
+                uploadedImages[previewId] = file;
+                
+                // Create a FileReader to read the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages[previewId + '_data'] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                document.getElementById(previewId).textContent = 'Image uploaded successfully';
+            }
+        }
 
-            // Uncheck the corresponding checkbox
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(cb => {
-                if (selectedFailures.find(f => f.text === cb.getAttribute('onchange')?.match(/'([^']+)'/)?.[1])) {
-                    return;
-                }
-                cb.checked = false;
-            });
-        } 
+        function handleMultipleImageUpload(input, previewId) {
+            if (input.files.length > 0) {
+                const files = Array.from(input.files);
+                uploadedImages[previewId] = files;
+                uploadedImages[previewId + '_data'] = [];
+                
+                // Read all files
+                files.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImages[previewId + '_data'][index] = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                document.getElementById(previewId).textContent = `${input.files.length} image(s) uploaded`;
+            }
+        }
 
-        function generatePDF() {
-            const doc = new jsPDF();
-            let y = 20;
-            const margin = 15;
-            const lineHeight = 8; 
+        function addImageToPDF(pdf, imageData, x, y, maxWidth, maxHeight) {
+            if (imageData) {
+                try {
+                    // Determine image format
+                    const format = imageData.includes('data:image/jpeg') ? 'JPEG' : 'PNG';
+                    
+                    // Add image to PDF with size constraints
+                    pdf.addImage(imageData, format, x, y, maxWidth, maxHeight);
+                    return maxHeight + 10; // Return height used plus margin
+                } catch (error) {
+                    console.error('Error adding image to PDF:', error);
+                    return 0;
+                }
+            }
+            return 0;
+        }
 
-            function addText(title, value) {
-                doc.setFont('helvetica', 'bold');
-                doc.text(title + ":", margin, y);
-                doc.setFont('helvetica', 'normal');
-                doc.text(value || '-', margin + 50, y);
-                y += lineHeight;
-            } 
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            
+            // Company footer
+            const footer = "Strike Point Lightning Protection Ltd Registered office: Atkinson Evans, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 01159903220";
+            
+            // Get form data
+            const siteAddress = document.getElementById('siteAddress').value;
+            const testDate = document.getElementById('testDate').value;
+            const engineerName = document.getElementById('engineerName').value;
+            const testKitRef = document.getElementById('testKitRef').value;
+            const standard = document.getElementById('standard').value;
+            const surgeInstalled = document.getElementById('surgeInstalled').value;
+            const surgeType = document.getElementById('surgeType').value;
+            const surgeSafe = document.getElementById('surgeSafe').value;
+            const generalComments = document.getElementById('generalComments').value;
+            const finalComments = document.getElementById('finalComments').value;
+            
+            let yPosition = 20;
+            
+            // Page 1 - Cover Page
+            // Add cover logo if uploaded
+            if (uploadedImages['coverLogoPreview_data']) {
+                const logoHeight = addImageToPDF(pdf, uploadedImages['coverLogoPreview_data'], 60, 20, 90, 40);
+                yPosition = 70;
+            } else {
+                yPosition = 30;
+            }
+            
+            pdf.setFontSize(24);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Lightning Protection System Report', 105, yPosition, { align: 'center' });
+            yPosition += 30;
+            
+            // Building image (if uploaded)
+            if (uploadedImages['buildingImagePreview_data']) {
+                const imageHeight = addImageToPDF(pdf, uploadedImages['buildingImagePreview_data'], 30, yPosition, 150, 100);
+                yPosition += imageHeight + 20;
+            }
+            
+            // Site details
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Site Details:', 105, yPosition, { align: 'center' });
+            yPosition += 20;
+            
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'normal');
+            const details = [
+                `Site Address: ${siteAddress}`,
+                `Date: ${testDate}`,
+                `Engineer: ${engineerName}`,
+                `Test Kit Reference: ${testKitRef}`
+            ];
+            
+            details.forEach((detail, index) => {
+                pdf.text(detail, 105, yPosition + (index * 10), { align: 'center' });
+            });
+            
+            // Page 2 - Report
+            pdf.addPage();
+            yPosition = 20;
+            
+            // Add header logo if uploaded
+            if (uploadedImages['headerLogoPreview_data']) {
+                addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+            }
+            
+            // Summary
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('INSPECTION SUMMARY', 20, yPosition);
+            yPosition += 15;
+            
+            // Pass/Fail determination
+            const hasFaults = selectedFailuresList.length > 0;
+            pdf.setFontSize(14);
+            if (hasFaults) {
+                pdf.setTextColor(220, 20, 60); // Red
+                pdf.text('RESULT: FAIL', 20, yPosition);
+            } else {
+                pdf.setTextColor(34, 139, 34); // Green
+                pdf.text('RESULT: PASS', 20, yPosition);
+            }
+            pdf.setTextColor(0, 0, 0); // Reset to black
+            yPosition += 20;
+            
+            // Standard used
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`Standard Applied: ${standard}`, 20, yPosition);
+            yPosition += 15;
+            
+            // Findings
+            if (selectedFailuresList.length > 0) {
+                pdf.setFont(undefined, 'bold');
+                pdf.text('FINDINGS:', 20, yPosition);
+                yPosition += 10;
+                
+                selectedFailuresList.forEach((failure, index) => {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`${index + 1}. ${failure.failure}`, 20, yPosition);
+                    yPosition += 8;
+                    
+                    if (failure.comment) {
+                        pdf.setFont(undefined, 'normal');
+                        const commentLines = pdf.splitTextToSize(`Comment: ${failure.comment}`, 170);
+                        pdf.text(commentLines, 25, yPosition);
+                        yPosition += commentLines.length * 5;
+                    }
+                    
+                    if (failure.imageData) {
+                        pdf.setFont(undefined, 'italic');
+                        pdf.text('Image:', 25, yPosition);
+                        yPosition += 8;
+                        const imageHeight = addImageToPDF(pdf, failure.imageData, 25, yPosition, 80, 60);
+                        yPosition += imageHeight;
+                    }
+                    
+                    yPosition += 5;
+                    
+                    // Add new page if needed
+                    if (yPosition > 250) {
+                        pdf.addPage();
+                        yPosition = 20;
+                        // Add footer to previous page
+                        pdf.setPage(pdf.internal.getNumberOfPages() - 1);
+                        pdf.setFontSize(8);
+                        const footerLines = pdf.splitTextToSize(footer, 190);
+                        pdf.text(footerLines, 105, 280, { align: 'center' });
+                        pdf.setPage(pdf.internal.getNumberOfPages());
+                        
+                        // Add header logo to new page
+                        if (uploadedImages['headerLogoPreview_data']) {
+                            addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                        }
+                    }
+                });
+            } else {
+                pdf.setFont(undefined, 'normal');
+                pdf.text('No faults identified during inspection.', 20, yPosition);
+                yPosition += 10;
+            }
+            
+            // Surge Protection Details
+            yPosition += 10;
+            pdf.setFont(undefined, 'bold');
+            pdf.text('SURGE PROTECTION:', 20, yPosition);
+            yPosition += 10;
+            
+            pdf.setFont(undefined, 'normal');
+            pdf.text(`Installed: ${surgeInstalled}`, 20, yPosition);
+            yPosition += 8;
+            if (surgeInstalled === 'Yes') {
+                pdf.text(`Type: ${surgeType}`, 20, yPosition);
+                yPosition += 8;
+                pdf.text(`Status: ${surgeSafe}`, 20, yPosition);
+                yPosition += 8;
+            }
+            
+            // General Comments
+            if (generalComments) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('GENERAL COMMENTS:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                const commentLines = pdf.splitTextToSize(generalComments, 170);
+                pdf.text(commentLines, 20, yPosition);
+                yPosition += commentLines.length * 5 + 10;
+            }
+            
+            // Page 3 - Earth Resistance Testing
+            pdf.addPage();
+            yPosition = 20;
+            
+            // Add header logo
+            if (uploadedImages['headerLogoPreview_data']) {
+                addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+            }
+            
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('EARTH RESISTANCE TESTING', 20, yPosition);
+            yPosition += 15;
+            
+            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
+            if (numEarths > 0) {
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Individual Earth Readings:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                earthResistances.forEach((resistance, index) => {
+                    pdf.text(`Earth ${index + 1}: ${resistance.toFixed(2)} Ω`, 20, yPosition);
+                    yPosition += 8;
+                });
+                
+                // Overall resistance
+                if (earthResistances.some(r => r > 0)) {
+                    const validResistances = earthResistances.filter(r => r > 0);
+                    const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
+                    const overallResistance = 1 / reciprocalSum;
+                    
+                    yPosition += 10;
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`Overall System Resistance: ${overallResistance.toFixed(3)} Ω`, 20, yPosition);
+                    yPosition += 10;
+                    
+                    // Compliance check
+                    pdf.setFont(undefined, 'normal');
+                    if (overallResistance <= 10) {
+                        pdf.setTextColor(34, 139, 34); // Green
+                        pdf.text('✓ Complies with 10Ω requirement', 20, yPosition);
+                    } else {
+                        pdf.setTextColor(220, 20, 60); // Red
+                        pdf.text('✗ Exceeds 10Ω requirement - FAIL', 20, yPosition);
+                    }
+                    pdf.setTextColor(0, 0, 0); // Reset to black
+                    yPosition += 15;
+                }
+                
+                // Earth test images
+                if (uploadedImages['earthImagesPreview_data']) {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Earth Test Images:', 20, yPosition);
+                    yPosition += 10;
+                    
+                    const images = Array.isArray(uploadedImages['earthImagesPreview_data']) ? 
+                        uploadedImages['earthImagesPreview_data'] : [uploadedImages['earthImagesPreview_data']];
+                    
+                    images.forEach((imageData, index) => {
+                        if (imageData && yPosition < 230) {
+                            const imageHeight = addImageToPDF(pdf, imageData, 20, yPosition, 80, 60);
+                            yPosition += imageHeight + 5;
+                            
+                            // Add new page if needed
+                            if (yPosition > 230 && index < images.length - 1) {
+                                pdf.addPage();
+                                yPosition = 20;
+                                if (uploadedImages['headerLogoPreview_data']) {
+                                    addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                pdf.setFont(undefined, 'normal');
+                pdf.text('No earth resistance testing performed.', 20, yPosition);
+                yPosition += 15;
+            }
+            
+            // Final Comments
+            if (finalComments) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                const finalLines = pdf.splitTextToSize(finalComments, 170);
+                pdf.text(finalLines, 20, yPosition);
+            }
+            
+            // Add footer to all pages except cover page
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 2; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                const footerLines = pdf.splitTextToSize(footer, 190);
+                pdf.text(footerLines, 105, 280, { align: 'center' });
+                
+                // Add header logo to each page if not already added
+                if (uploadedImages['headerLogoPreview_data']) {
+                    addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                }
+            }
+            
+            // Generate filename
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `Lightning_Protection_Report_${date}.pdf`;
+            
+            // Save the PDF
+            pdf.save(filename);
+        }
+    </script></script>
+    <script>
+        // Comprehensive failure definitions by standard
+        const standardFailures = {
+            "BS EN 62305": [
+                "Earth resistance exceeds 10Ω requirement",
+                "Poor continuity between air terminals and down conductors",
+                "Air terminals not meeting LPL requirements",
+                "Down conductors not following shortest route to earth",
+                "Inadequate separation distance from metalwork",
+                "Missing equipotential bonding connections",
+                "Non-compliant conductor materials or dimensions",
+                "Earth termination system Type A/B non-compliance",
+                "Missing or inadequate surge protection devices",
+                "SPD coordination issues between protection levels",
+                "Insufficient lightning protection zones implementation",
+                "Risk assessment not conducted or outdated",
+                "Missing bonds to external metalwork",
+                "Corrosion exceeding acceptable limits",
+                "Mechanical damage to system components",
+                "Installation not meeting Class I/II/III/IV requirements",
+                "Missing test clamps or inspection facilities",
+                "Documentation incomplete or missing",
+                "Non-compliance with manufacturer specifications",
+                "Environmental protection inadequate"
+            ],
+            "BS 6651": [
+                "Earth electrode resistance above 10Ω",
+                "Continuity failure in conductor network",
+                "Air terminal spacing exceeds 20m/25m limits",
+                "Down conductor route not direct to earth",
+                "Missing side-flash protection bonds",
+                "Conductor cross-sectional area insufficient",
+                "Earth electrode depth/installation inadequate",
+                "Joint resistance exceeding 0.05Ω",
+                "Missing surge diverter protection",
+                "Corrosion affecting system integrity",
+                "Mechanical protection inadequate",
+                "Test facilities not provided",
+                "Risk factor calculation not meeting 10⁻⁵ limit",
+                "Material specifications non-compliant",
+                "Missing bonds to metallic services",
+                "Down conductor count insufficient for building size",
+                "Air terminal height inadequate for protection",
+                "Missing isolation joints where required",
+                "Installation records incomplete",
+                "Maintenance schedule not followed"
+            ],
+            "CP 326": [
+                "Non-compliance with basic protection principles",
+                "Inadequate conductor sizing for historic requirements",
+                "Missing earth connections",
+                "Poor workmanship in installations",
+                "Material degradation beyond acceptable limits",
+                "Insufficient protection coverage",
+                "Missing documentation from original installation",
+                "Non-standard component usage",
+                "Inadequate maintenance records",
+                "System modifications without proper design review"
+            ],
+            "NF C 17-102": [
+                "ESE efficiency (ΔT) not verified or inadequate",
+                "Protection radius calculation errors",
+                "Air terminal not meeting ESE testing requirements",
+                "Down conductor installation non-compliant",
+                "Earth resistance exceeding French standard limits",
+                "ESE device not certified to NF C 17-102",
+                "Missing surge protection coordination",
+                "Equipotential bonding inadequate",
+                "Installation height calculations incorrect",
+                "Early streamer emission timing not verified",
+                "Protection level selection inappropriate",
+                "Missing risk assessment per French requirements",
+                "EMC compliance issues with electronic ESE devices",
+                "Mechanical strength testing not verified",
+                "Current withstand capability not proven",
+                "Protection zone overlap insufficient",
+                "Installation not meeting manufacturer requirements",
+                "Missing periodic testing verification",
+                "Documentation not in French standard format",
+                "System commissioning incomplete"
+            ]
+        };
 
-            // Page 1: Header and Basic Info
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text("Lightning Protection System Inspection Report", margin, y);
-            y += 15; 
+        let selectedFailuresList = [];
+        let earthResistances = [];
+        let uploadedImages = {};
 
-            doc.setFontSize(11);
-            addText("Engineer", document.getElementById("engineerName").value);
-            addText("Site Address", document.getElementById("siteAddress").value);
-            addText("Date", document.getElementById("inspectionDate").value);
-            addText("Test Kit Number", document.getElementById("testKitNumber").value);
-            addText("Building Reference", document.getElementById("buildingReference").value);
-            addText("Weather Conditions", document.getElementById("weatherConditions").value);
-            addText("Standard Tested To", document.getElementById("selectedStandard").value); 
+        // Set today's date as default
+        document.getElementById('testDate').valueAsDate = new Date();
 
-            y += 10; 
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('active');
+        }
 
-            // Failures section
-            if (selectedFailures.length > 0) {
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.text("System Failures and Non-Conformities", margin, y);
-                y += 10; 
+        function updateFailuresList() {
+            const standard = document.getElementById('standard').value;
+            const container = document.getElementById('failuresContainer');
+            const failuresList = document.getElementById('failuresList');
+            
+            if (standard && standardFailures[standard]) {
+                container.classList.remove('hidden');
+                failuresList.innerHTML = '';
+                
+                standardFailures[standard].forEach((failure, index) => {
+                    const failureDiv = document.createElement('div');
+                    failureDiv.className = 'failure-option';
+                    failureDiv.textContent = failure;
+                    failureDiv.onclick = () => selectFailure(failure, failureDiv);
+                    failuresList.appendChild(failureDiv);
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
 
-                selectedFailures.forEach((failure, index) => {
-                    if (y > 250) {
-                        doc.addPage();
-                        y = 20;
-                    } 
+        function selectFailure(failure, element) {
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedFailuresList = selectedFailuresList.filter(f => f.failure !== failure);
+            } else {
+                element.classList.add('selected');
+                selectedFailuresList.push({
+                    failure: failure,
+                    comment: '',
+                    image: null
+                });
+            }
+            updateSelectedFailures();
+        }
 
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(`Failure ${index + 1}:`, margin, y);
-                    y += 6; 
+        function updateSelectedFailures() {
+            const container = document.getElementById('selectedFailures');
+            container.innerHTML = '';
+            
+            selectedFailuresList.forEach((item, index) => {
+                const failureDiv = document.createElement('div');
+                failureDiv.className = 'failure-item';
+                failureDiv.innerHTML = `
+                    <h4>${item.failure}</h4>
+                    <div class="form-group">
+                        <label>Comment:</label>
+                        <textarea onchange="updateFailureComment(${index}, this.value)" placeholder="Add detailed comments about this failure...">${item.comment}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image:</label>
+                        <div class="image-upload" onclick="document.getElementById('failureImage${index}').click()">
+                            <input type="file" id="failureImage${index}" accept="image/*" style="display: none;" onchange="handleFailureImage(${index}, this)">
+                            <div id="failureImagePreview${index}">${item.image ? 'Image uploaded' : 'Click to upload image'}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(failureDiv);
+            });
+        }
 
-                    doc.setFont('helvetica', 'normal');
-                    const failureLines = doc.splitTextToSize(failure.text, 170);
-                    failureLines.forEach(line => {
-                        doc.text(line, margin, y);
-                        y += 6;
-                    }); 
+        function updateFailureComment(index, comment) {
+            selectedFailuresList[index].comment = comment;
+        }
 
-                    if (failure.notes) {
-                        y += 3;
-                        doc.setFont('helvetica', 'bold');
-                        doc.text("Engineer Notes:", margin, y);
-                        y += 6;
-                        doc.setFont('helvetica', 'normal');
-                        const notesLines = doc.splitTextToSize(failure.notes, 170);
-                        notesLines.forEach(line => {
-                            doc.text(line, margin, y);
-                            y += 6;
-                        });
-                    } 
+        function handleFailureImage(index, input) {
+            if (input.files[0]) {
+                selectedFailuresList[index].image = input.files[0];
+                document.getElementById(`failureImagePreview${index}`).textContent = 'Image uploaded';
+            }
+        }
 
-                    if (failure.image) {
-                        if (y > 200) {
-                            doc.addPage();
-                            y = 20;
-                        }
-                        const imgProps = doc.getImageProperties(failure.image);
-                        const imgWidth = 80;
-                        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-                        doc.addImage(failure.image, 'JPEG', margin, y, imgWidth, imgHeight);
-                        y += imgHeight + 10;
-                    } 
+        function generateEarthInputs() {
+            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
+            const container = document.getElementById('earthInputs');
+            
+            if (numEarths > 0) {
+                container.style.display = 'block';
+                container.innerHTML = '<h4>Enter Earth Resistance Values (Ω):</h4>';
+                
+                for (let i = 1; i <= numEarths; i++) {
+                    const inputGroup = document.createElement('div');
+                    inputGroup.className = 'earth-input-group';
+                    inputGroup.innerHTML = `
+                        <label>Earth ${i}:</label>
+                        <input type="number" step="0.01" min="0" onchange="updateEarthResistance(${i-1}, this.value)" placeholder="0.00">
+                        <span>Ω</span>
+                    `;
+                    container.appendChild(inputGroup);
+                }
+                earthResistances = new Array(numEarths).fill(0);
+            } else {
+                container.style.display = 'none';
+                document.getElementById('earthResult').classList.add('hidden');
+            }
+        }
 
-                    y += 10;
-                });
-            } else {
-                doc.setFontSize(14);
-                doc.setFont('helvetica', 'bold');
-                doc.text("Inspection Result", margin, y);
-                y += 10; 
+        function updateEarthResistance(index, value) {
+            earthResistances[index] = parseFloat(value) || 0;
+            calculateOverallResistance();
+        }
 
-                doc.setFont('helvetica', 'normal');
-                doc.text("No failures or non-conformities identified during this inspection.", margin, y);
-                y += 6;
-                doc.text("The lightning protection system appears to be compliant with the selected standard.", margin, y);
-            } 
+        function calculateOverallResistance() {
+            if (earthResistances.length > 0 && earthResistances.some(r => r > 0)) {
+                // Parallel resistance formula: 1/RT = 1/R1 + 1/R2 + ... + 1/Rn
+                const validResistances = earthResistances.filter(r => r > 0);
+                const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
+                const overallResistance = 1 / reciprocalSum;
+                
+                document.getElementById('earthResult').classList.remove('hidden');
+                document.getElementById('overallResistance').innerHTML = `
+                    <strong>${overallResistance.toFixed(3)} Ω</strong>
+                    <br><small>Calculated from ${validResistances.length} earth electrode(s)</small>
+                `;
+            } else {
+                document.getElementById('earthResult').classList.add('hidden');
+            }
+        }
 
-            // Add footer to all pages
-            addFooter(doc); 
+        function handleImageUpload(input, previewId) {
+            if (input.files[0]) {
+                const file = input.files[0];
+                uploadedImages[previewId] = file;
+                
+                // Create a FileReader to read the image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages[previewId + '_data'] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                document.getElementById(previewId).textContent = 'Image uploaded successfully';
+            }
+        }
 
-            doc.save("LPS_Inspection_Report.pdf");
-        } 
+        function handleMultipleImageUpload(input, previewId) {
+            if (input.files.length > 0) {
+                const files = Array.from(input.files);
+                uploadedImages[previewId] = files;
+                uploadedImages[previewId + '_data'] = [];
+                
+                // Read all files
+                files.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImages[previewId + '_data'][index] = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                document.getElementById(previewId).textContent = `${input.files.length} image(s) uploaded`;
+            }
+        }
 
-        function addFooter(doc) {
-            const pageCount = doc.getNumberOfPages();
-            const footerText = "Strike Point Lightning Protection Ltd - Registered office: Atkinson & Evans Ltd, 10 Arnot Hill Road, Nottingham NG5 6LJ.\nCompany No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 0115 990 3220"; 
+        function handleFailureImage(index, input) {
+            if (input.files[0]) {
+                const file = input.files[0];
+                selectedFailuresList[index].image = file;
+                
+                // Read the image data
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFailuresList[index].imageData = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                
+                document.getElementById(`failureImagePreview${index}`).textContent = 'Image uploaded';
+            }
+        }
 
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.setFont('helvetica', 'normal');
-                const lines = doc.splitTextToSize(footerText, 180);
-                let footerY = 290 - (lines.length - 1) * 4;
-                lines.forEach(line => {
-                    doc.text(line, 105, footerY, { align: 'center' });
-                    footerY += 4;
-                });
-            }
-        } 
-
-        // Set today's date by default
-        document.getElementById('inspectionDate').valueAsDate = new Date();
-    </script>
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            
+            // Company footer
+            const footer = "Strike Point Lightning Protection Ltd Registered office: Atkinson Evans, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 01159903220";
+            
+            // Get form data
+            const siteAddress = document.getElementById('siteAddress').value;
+            const testDate = document.getElementById('testDate').value;
+            const engineerName = document.getElementById('engineerName').value;
+            const testKitRef = document.getElementById('testKitRef').value;
+            const standard = document.getElementById('standard').value;
+            const surgeInstalled = document.getElementById('surgeInstalled').value;
+            const surgeType = document.getElementById('surgeType').value;
+            const surgeSafe = document.getElementById('surgeSafe').value;
+            const generalComments = document.getElementById('generalComments').value;
+            const finalComments = document.getElementById('finalComments').value;
+            
+            let yPosition = 20;
+            
+            // Page 1 - Cover Page
+            // Add cover logo if uploaded
+            if (uploadedImages['coverLogoPreview_data']) {
+                const logoHeight = addImageToPDF(pdf, uploadedImages['coverLogoPreview_data'], 60, 20, 90, 40);
+                yPosition = 70;
+            } else {
+                yPosition = 30;
+            }
+            
+            pdf.setFontSize(24);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Lightning Protection System Report', 105, yPosition, { align: 'center' });
+            yPosition += 30;
+            
+            // Building image (if uploaded)
+            if (uploadedImages['buildingImagePreview_data']) {
+                const imageHeight = addImageToPDF(pdf, uploadedImages['buildingImagePreview_data'], 30, yPosition, 150, 100);
+                yPosition += imageHeight + 20;
+            }
+            
+            // Site details
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Site Details:', 105, yPosition, { align: 'center' });
+            yPosition += 20;
+            
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'normal');
+            const details = [
+                `Site Address: ${siteAddress}`,
+                `Date: ${testDate}`,
+                `Engineer: ${engineerName}`,
+                `Test Kit Reference: ${testKitRef}`
+            ];
+            
+            details.forEach((detail, index) => {
+                pdf.text(detail, 105, yPosition + (index * 10), { align: 'center' });
+            });
+            
+            // Page 2 - Report
+            pdf.addPage();
+            yPosition = 20;
+            
+            // Add header logo if uploaded
+            if (uploadedImages['headerLogoPreview_data']) {
+                addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+            }
+            
+            // Summary
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('INSPECTION SUMMARY', 20, yPosition);
+            yPosition += 15;
+            
+            // Pass/Fail determination
+            const hasFaults = selectedFailuresList.length > 0;
+            pdf.setFontSize(14);
+            if (hasFaults) {
+                pdf.setTextColor(220, 20, 60); // Red
+                pdf.text('RESULT: FAIL', 20, yPosition);
+            } else {
+                pdf.setTextColor(34, 139, 34); // Green
+                pdf.text('RESULT: PASS', 20, yPosition);
+            }
+            pdf.setTextColor(0, 0, 0); // Reset to black
+            yPosition += 20;
+            
+            // Standard used
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`Standard Applied: ${standard}`, 20, yPosition);
+            yPosition += 15;
+            
+            // Findings
+            if (selectedFailuresList.length > 0) {
+                pdf.setFont(undefined, 'bold');
+                pdf.text('FINDINGS:', 20, yPosition);
+                yPosition += 10;
+                
+                selectedFailuresList.forEach((failure, index) => {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`${index + 1}. ${failure.failure}`, 20, yPosition);
+                    yPosition += 8;
+                    
+                    if (failure.comment) {
+                        pdf.setFont(undefined, 'normal');
+                        const commentLines = pdf.splitTextToSize(`Comment: ${failure.comment}`, 170);
+                        pdf.text(commentLines, 25, yPosition);
+                        yPosition += commentLines.length * 5;
+                    }
+                    
+                    if (failure.imageData) {
+                        pdf.setFont(undefined, 'italic');
+                        pdf.text('Image:', 25, yPosition);
+                        yPosition += 8;
+                        const imageHeight = addImageToPDF(pdf, failure.imageData, 25, yPosition, 80, 60);
+                        yPosition += imageHeight;
+                    }
+                    
+                    yPosition += 5;
+                    
+                    // Add new page if needed
+                    if (yPosition > 250) {
+                        pdf.addPage();
+                        yPosition = 20;
+                        // Add footer to previous page
+                        pdf.setPage(pdf.internal.getNumberOfPages() - 1);
+                        pdf.setFontSize(8);
+                        const footerLines = pdf.splitTextToSize(footer, 190);
+                        pdf.text(footerLines, 105, 280, { align: 'center' });
+                        pdf.setPage(pdf.internal.getNumberOfPages());
+                        
+                        // Add header logo to new page
+                        if (uploadedImages['headerLogoPreview_data']) {
+                            addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                        }
+                    }
+                });
+            } else {
+                pdf.setFont(undefined, 'normal');
+                pdf.text('No earth resistance testing performed.', 20, yPosition);
+                yPosition += 15;
+            }
+            
+            // Final Comments
+            if (finalComments) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                const finalLines = pdf.splitTextToSize(finalComments, 170);
+                pdf.text(finalLines, 20, yPosition);
+            }d, 'normal');
+                pdf.text('No faults identified during inspection.', 20, yPosition);
+                yPosition += 10;
+            }
+            
+            // Surge Protection Details
+            yPosition += 10;
+            pdf.setFont(undefined, 'bold');
+            pdf.text('SURGE PROTECTION:', 20, yPosition);
+            yPosition += 10;
+            
+            pdf.setFont(undefined, 'normal');
+            pdf.text(`Installed: ${surgeInstalled}`, 20, yPosition);
+            yPosition += 8;
+            if (surgeInstalled === 'Yes') {
+                pdf.text(`Type: ${surgeType}`, 20, yPosition);
+                yPosition += 8;
+                pdf.text(`Status: ${surgeSafe}`, 20, yPosition);
+                yPosition += 8;
+            }
+            
+            // General Comments
+            if (generalComments) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('GENERAL COMMENTS:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                const commentLines = pdf.splitTextToSize(generalComments, 170);
+                pdf.text(commentLines, 20, yPosition);
+                yPosition += commentLines.length * 5 + 10;
+            }
+            
+            // Page 3 - Earth Resistance Testing
+            pdf.addPage();
+            yPosition = 20;
+            
+            // Add header logo
+            if (uploadedImages['headerLogoPreview_data']) {
+                addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+            }
+            
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('EARTH RESISTANCE TESTING', 20, yPosition);
+            yPosition += 15;
+            
+            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
+            if (numEarths > 0) {
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Individual Earth Readings:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                earthResistances.forEach((resistance, index) => {
+                    pdf.text(`Earth ${index + 1}: ${resistance.toFixed(2)} Ω`, 20, yPosition);
+                    yPosition += 8;
+                });
+                
+                // Overall resistance
+                if (earthResistances.some(r => r > 0)) {
+                    const validResistances = earthResistances.filter(r => r > 0);
+                    const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
+                    const overallResistance = 1 / reciprocalSum;
+                    
+                    yPosition += 10;
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`Overall System Resistance: ${overallResistance.toFixed(3)} Ω`, 20, yPosition);
+                    yPosition += 10;
+                    
+                    // Compliance check
+                    pdf.setFont(undefined, 'normal');
+                    if (overallResistance <= 10) {
+                        pdf.setTextColor(34, 139, 34); // Green
+                        pdf.text('✓ Complies with 10Ω requirement', 20, yPosition);
+                    } else {
+                        pdf.setTextColor(220, 20, 60); // Red
+                        pdf.text('✗ Exceeds 10Ω requirement - FAIL', 20, yPosition);
+                    }
+                    pdf.setTextColor(0, 0, 0); // Reset to black
+                    yPosition += 15;
+                }
+                
+                // Earth test images
+                if (uploadedImages['earthImagesPreview_data']) {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Earth Test Images:', 20, yPosition);
+                    yPosition += 10;
+                    
+                    const images = Array.isArray(uploadedImages['earthImagesPreview_data']) ? 
+                        uploadedImages['earthImagesPreview_data'] : [uploadedImages['earthImagesPreview_data']];
+                    
+                    images.forEach((imageData, index) => {
+                        if (imageData && yPosition < 230) {
+                            const imageHeight = addImageToPDF(pdf, imageData, 20, yPosition, 80, 60);
+                            yPosition += imageHeight + 5;
+                            
+                            // Add new page if needed
+                            if (yPosition > 230 && index < images.length - 1) {
+                                pdf.addPage();
+                                yPosition = 20;
+                                if (uploadedImages['headerLogoPreview_data']) {
+                                    addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else {
+                pdf.setFont(undefined, 'normal');
+                pdf.text('No earth resistance testing performed.', 20, yPosition);
+                yPosition += 15;
+            }
+            
+            // Final Comments
+            if (finalComments) {
+                yPosition += 10;
+                pdf.setFont(undefined, 'bold');
+                pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
+                yPosition += 10;
+                
+                pdf.setFont(undefined, 'normal');
+                const finalLines = pdf.splitTextToSize(finalComments, 170);
+                pdf.text(finalLines, 20, yPosition);
+            }d, 'normal');
+                pdf.text('No earth resistance testing performed.', 20, yPosition);
+            }
+            
+            // Add footer to all pages except cover page
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 2; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                const footerLines = pdf.splitTextToSize(footer, 190);
+                pdf.text(footerLines, 105, 280, { align: 'center' });
+            }
+            
+            // Generate filename
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `Lightning_Protection_Report_${date}.pdf`;
+            
+            // Save the PDF
+            pdf.save(filename);
+        }
+    </script>
 </body>
 </html>
