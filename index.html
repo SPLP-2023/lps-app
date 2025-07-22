@@ -421,25 +421,197 @@
             <div id="selectedFailures"></div>
         </div>
 
-        <!-- Surge Protection -->
+        <!-- General Comments Section -->
         <div class="section">
-            <h2>🛡️ Surge Protection Details</h2>
+            <h2>💬 General Comments</h2>
+            <div class="form-group">
+                <label for="generalComments">Additional Comments:</label>
+                <textarea id="generalComments" rows="4" placeholder="Enter any additional observations, recommendations, or general comments about the lightning protection system..."></textarea>
+            </div>
+        </div>
+
+        <!-- Structure Details Section -->
+        <div class="section">
+            <h2>🏢 Structure Details</h2>
+            
             <div class="form-row">
                 <div class="form-group">
-                    <label for="surgeInstalled">Surge Protection Installed:</label>
-                    <select id="surgeInstalled">
-                        <option value="No">No</option>
-                        <option value="Yes">Yes</option>
-                    </select>
+                    <label for="structureHeight">Structure Height (m):</label>
+                    <input type="number" id="structureHeight" step="0.1" min="0" placeholder="0.0">
                 </div>
                 <div class="form-group">
-                    <label for="surgeType">Type:</label>
-                    <input type="text" id="surgeType" placeholder="e.g., Type 1, Type 2, Combined...">
+                    <label for="structurePerimeter">Structure Perimeter (m):</label>
+                    <input type="number" id="structurePerimeter" step="0.1" min="0" placeholder="0.0">
                 </div>
             </div>
+
             <div class="form-group">
-                <label for="surgeSafe">Is it Safe:</label>
+                <label>1. What is the ground type?</label>
+                <div id="groundTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Tarmac', this)">Tarmac</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Concrete', this)">Concrete</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Grass', this)">Grass</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Soil', this)">Soil</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Gravel Slabs', this)">Gravel Slabs</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Block Paving', this)">Block Paving</div>
+                    <div class="failure-option" onclick="selectSystemDetail('groundType', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="groundTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('groundType', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>2. What is the structure wall type?</label>
+                <div id="wallTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Brick', this)">Brick</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Render', this)">Render</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Metal Clad', this)">Metal Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Wooden Clad', this)">Wooden Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Composite Clad', this)">Composite Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Glazing', this)">Glazing</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Stone Block', this)">Stone Block</div>
+                    <div class="failure-option" onclick="selectSystemDetail('wallType', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="wallTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('wallType', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>3. What is the Roof type?</label>
+                <div id="roofTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Felt', this)">Felt</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Membrane', this)">Membrane</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Metal Clad', this)">Metal Clad</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Tiles', this)">Tiles</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Lead', this)">Lead</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Thatch', this)">Thatch</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Concrete', this)">Concrete</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofType', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="roofTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('roofType', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>4. What is the Roof Structure?</label>
+                <div id="roofStructureList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('roofStructure', 'Pitched', this)">Pitched</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofStructure', 'Domed', this)">Domed</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofStructure', 'Flat', this)">Flat</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofStructure', 'Complex', this)">Complex</div>
+                    <div class="failure-option" onclick="selectSystemDetail('roofStructure', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="roofStructureOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('roofStructure', this.value)">
+            </div>
+        </div>
+
+        <!-- System Details Section -->
+        <div class="section">
+            <h2>🏗️ System Details</h2>
+            
+            <div class="form-group">
+                <label>1. Air-Termination type</label>
+                <div id="airTerminationList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'Externally fitted Faraday Cage', this)">Externally fitted Faraday Cage</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'ESEAT', this)">ESEAT</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'Conductive Sheet & Cappings', this)">Conductive Sheet & Cappings</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'Finial Rods', this)">Finial Rods</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'HVI Installation', this)">HVI Installation</div>
+                    <div class="failure-option" onclick="selectSystemDetail('airTermination', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="airTerminationOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('airTermination', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>2. AT Conductors</label>
+                <div id="atConductorsList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm PVC Black', this)">25x3mm PVC Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm PVC Grey', this)">25x3mm PVC Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm PVC Stone', this)">25x3mm PVC Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm PVC Brown', this)">25x3mm PVC Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm PVC White', this)">25x3mm PVC White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '25x3mm Bare', this)">25x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm PVC Black', this)">8mm PVC Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm PVC Grey', this)">8mm PVC Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm PVC Stone', this)">8mm PVC Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm PVC Brown', this)">8mm PVC Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm PVC White', this)">8mm PVC White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', '8mm Bare', this)">8mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('atConductors', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="atConductorsOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('atConductors', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>3. Down Conductor Type</label>
+                <div id="downConductorTypeList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorType', 'Externally fitted Conductors', this)">Externally fitted Conductors</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorType', 'Cavity Conductors', this)">Cavity Conductors</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorType', 'Internal Framework', this)">Internal Framework</div>
+                    <div class="failure-option" onclick="selectSystemDetail('downConductorType', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="downConductorTypeOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('downConductorType', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>4. DC Conductors</label>
+                <div id="dcConductorsList" class="failures-list">
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm PVC Black', this)">25x3mm PVC Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm PVC Grey', this)">25x3mm PVC Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm PVC Stone', this)">25x3mm PVC Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm PVC Brown', this)">25x3mm PVC Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm PVC White', this)">25x3mm PVC White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '25x3mm Bare', this)">25x3mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm PVC Black', this)">8mm PVC Black</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm PVC Grey', this)">8mm PVC Grey</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm PVC Stone', this)">8mm PVC Stone</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm PVC Brown', this)">8mm PVC Brown</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm PVC White', this)">8mm PVC White</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', '8mm Bare', this)">8mm Bare</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', 'HVI Single', this)">HVI Single</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', 'HVI Multiple', this)">HVI Multiple</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', 'Framework (Steel Columns)', this)">Framework (Steel Columns)</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', 'Framework (Steel Reinforcing Bars)', this)">Framework (Steel Reinforcing Bars)</div>
+                    <div class="failure-option" onclick="selectSystemDetail('dcConductors', 'Other', this, true)">Other</div>
+                </div>
+                <input type="text" id="dcConductorsOther" class="hidden" placeholder="Please specify..." onchange="updateOtherValue('dcConductors', this.value)">
+            </div>
+
+            <div class="form-group">
+                <label>5. Earth Pits</label>
+                <select id="earthPits">
+                    <option value="">Select...</option>
+                    <option value="Concrete">Concrete</option>
+                    <option value="Polymer">Polymer</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>6. Main Equipotential Bond</label>
+                <select id="mainEquipotentialBond">
+                    <option value="">Select...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Unidentified">Unidentified</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>7. Surge Protection Installed</label>
+                <select id="surgeInstalled">
+                    <option value="">Select...</option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>8. Surge Protection Type</label>
+                <input type="text" id="surgeType" placeholder="e.g., Type 1, Type 2, Combined...">
+            </div>
+
+            <div class="form-group">
+                <label>9. Surge Protection Safety Status</label>
                 <select id="surgeSafe">
+                    <option value="">Select...</option>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                     <option value="Requires Further Investigation">Requires Further Investigation</option>
@@ -465,15 +637,6 @@
                     <input type="file" id="earthImagesFile" accept="image/*" multiple style="display: none;" onchange="handleMultipleImageUpload(this, 'earthImagesPreview')">
                     <div id="earthImagesPreview">Click to upload earth test images</div>
                 </div>
-            </div>
-        </div>
-
-        <!-- General Comments Section -->
-        <div class="section">
-            <h2>💬 General Comments</h2>
-            <div class="form-group">
-                <label for="generalComments">Additional Comments:</label>
-                <textarea id="generalComments" rows="4" placeholder="Enter any additional observations, recommendations, or general comments about the lightning protection system..."></textarea>
             </div>
         </div>
 
@@ -513,91 +676,92 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Comprehensive failure definitions by standard
+        // Comprehensive failure definitions by standard with references
         const standardFailures = {
             "BS EN 62305": [
-                "Earth resistance exceeds 10Ω requirement",
-                "Poor continuity between air terminals and down conductors",
-                "Air terminals not meeting LPL requirements",
-                "Down conductors not following shortest route to earth",
-                "Inadequate separation distance from metalwork",
-                "Missing equipotential bonding connections",
-                "Non-compliant conductor materials or dimensions",
-                "Earth termination system Type A/B non-compliance",
-                "Missing or inadequate surge protection devices",
-                "SPD coordination issues between protection levels",
-                "Insufficient lightning protection zones implementation",
-                "Risk assessment not conducted or outdated",
-                "Missing bonds to external metalwork",
-                "Corrosion exceeding acceptable limits",
-                "Mechanical damage to system components",
-                "Installation not meeting Class I/II/III/IV requirements",
-                "Missing test clamps or inspection facilities",
-                "Documentation incomplete or missing",
-                "Non-compliance with manufacturer specifications",
-                "Environmental protection inadequate"
+                { failure: "Earth resistance exceeds 10 Ohm requirement", ref: "BS EN 62305-3, Section 5.4.2" },
+                { failure: "Poor continuity between air terminals and down conductors", ref: "BS EN 62305-3, Section 5.2.1" },
+                { failure: "Air terminals not meeting LPL requirements", ref: "BS EN 62305-3, Section 5.2.2, Table 2" },
+                { failure: "Down conductors not following shortest route to earth", ref: "BS EN 62305-3, Section 5.3.1" },
+                { failure: "Inadequate separation distance from metalwork", ref: "BS EN 62305-3, Section 6.3" },
+                { failure: "Missing equipotential bonding connections", ref: "BS EN 62305-3, Section 6.2" },
+                { failure: "Non-compliant conductor materials or dimensions", ref: "BS EN 62305-3, Section 5.5, Table 3" },
+                { failure: "Earth termination system Type A/B non-compliance", ref: "BS EN 62305-3, Section 5.4.1" },
+                { failure: "Missing or inadequate surge protection devices", ref: "BS EN 62305-4, Section 6" },
+                { failure: "SPD coordination issues between protection levels", ref: "BS EN 62305-4, Section 7.3" },
+                { failure: "Insufficient lightning protection zones implementation", ref: "BS EN 62305-4, Section 4" },
+                { failure: "Risk assessment not conducted or outdated", ref: "BS EN 62305-2, Section 4" },
+                { failure: "Missing bonds to external metalwork", ref: "BS EN 62305-3, Section 6.2.1" },
+                { failure: "Corrosion exceeding acceptable limits", ref: "BS EN 62305-3, Section 5.5.4" },
+                { failure: "Mechanical damage to system components", ref: "BS EN 62305-3, Section 5.5.3" },
+                { failure: "Installation not meeting Class I/II/III/IV requirements", ref: "BS EN 62305-3, Section 5.1, Table 1" },
+                { failure: "Missing test clamps or inspection facilities", ref: "BS EN 62305-3, Section 7.1" },
+                { failure: "Documentation incomplete or missing", ref: "BS EN 62305-3, Section 8" },
+                { failure: "Non-compliance with manufacturer specifications", ref: "BS EN 62305-3, Section 5.5.1" },
+                { failure: "Environmental protection inadequate", ref: "BS EN 62305-3, Section 5.5.3" }
             ],
             "BS 6651": [
-                "Earth electrode resistance above 10Ω",
-                "Continuity failure in conductor network",
-                "Air terminal spacing exceeds 20m/25m limits",
-                "Down conductor route not direct to earth",
-                "Missing side-flash protection bonds",
-                "Conductor cross-sectional area insufficient",
-                "Earth electrode depth/installation inadequate",
-                "Joint resistance exceeding 0.05Ω",
-                "Missing surge diverter protection",
-                "Corrosion affecting system integrity",
-                "Mechanical protection inadequate",
-                "Test facilities not provided",
-                "Risk factor calculation not meeting 10⁻⁵ limit",
-                "Material specifications non-compliant",
-                "Missing bonds to metallic services",
-                "Down conductor count insufficient for building size",
-                "Air terminal height inadequate for protection",
-                "Missing isolation joints where required",
-                "Installation records incomplete",
-                "Maintenance schedule not followed"
+                { failure: "Earth electrode resistance above 10 Ohm", ref: "BS 6651, Section 13.2" },
+                { failure: "Continuity failure in conductor network", ref: "BS 6651, Section 9.1" },
+                { failure: "Air terminal spacing exceeds 20m/25m limits", ref: "BS 6651, Section 7.2" },
+                { failure: "Down conductor route not direct to earth", ref: "BS 6651, Section 8.1" },
+                { failure: "Missing side-flash protection bonds", ref: "BS 6651, Section 14.1" },
+                { failure: "Conductor cross-sectional area insufficient", ref: "BS 6651, Section 6.2, Table 1" },
+                { failure: "Earth electrode depth/installation inadequate", ref: "BS 6651, Section 13.1" },
+                { failure: "Joint resistance exceeding 0.05 Ohm", ref: "BS 6651, Section 9.2" },
+                { failure: "Missing surge diverter protection", ref: "BS 6651, Annex C" },
+                { failure: "Corrosion affecting system integrity", ref: "BS 6651, Section 6.3" },
+                { failure: "Mechanical protection inadequate", ref: "BS 6651, Section 6.4" },
+                { failure: "Test facilities not provided", ref: "BS 6651, Section 33.1" },
+                { failure: "Risk factor calculation not meeting 10^-5 limit", ref: "BS 6651, Section 4.1" },
+                { failure: "Material specifications non-compliant", ref: "BS 6651, Section 6.1, Table 1" },
+                { failure: "Missing bonds to metallic services", ref: "BS 6651, Section 14.2" },
+                { failure: "Down conductor count insufficient for building size", ref: "BS 6651, Section 8.2" },
+                { failure: "Air terminal height inadequate for protection", ref: "BS 6651, Section 7.1" },
+                { failure: "Missing isolation joints where required", ref: "BS 6651, Section 14.3" },
+                { failure: "Installation records incomplete", ref: "BS 6651, Section 34.1" },
+                { failure: "Maintenance schedule not followed", ref: "BS 6651, Section 34.2" }
             ],
             "CP 326": [
-                "Non-compliance with basic protection principles",
-                "Inadequate conductor sizing for historic requirements",
-                "Missing earth connections",
-                "Poor workmanship in installations",
-                "Material degradation beyond acceptable limits",
-                "Insufficient protection coverage",
-                "Missing documentation from original installation",
-                "Non-standard component usage",
-                "Inadequate maintenance records",
-                "System modifications without proper design review"
+                { failure: "Non-compliance with basic protection principles", ref: "CP 326, Section 2" },
+                { failure: "Inadequate conductor sizing for historic requirements", ref: "CP 326, Section 3.1" },
+                { failure: "Missing earth connections", ref: "CP 326, Section 4" },
+                { failure: "Poor workmanship in installations", ref: "CP 326, Section 5" },
+                { failure: "Material degradation beyond acceptable limits", ref: "CP 326, Section 3.2" },
+                { failure: "Insufficient protection coverage", ref: "CP 326, Section 2.1" },
+                { failure: "Missing documentation from original installation", ref: "CP 326, Section 6" },
+                { failure: "Non-standard component usage", ref: "CP 326, Section 3.3" },
+                { failure: "Inadequate maintenance records", ref: "CP 326, Section 6.1" },
+                { failure: "System modifications without proper design review", ref: "CP 326, Section 5.1" }
             ],
             "NF C 17-102": [
-                "ESE efficiency (ΔT) not verified or inadequate",
-                "Protection radius calculation errors",
-                "Air terminal not meeting ESE testing requirements",
-                "Down conductor installation non-compliant",
-                "Earth resistance exceeding French standard limits",
-                "ESE device not certified to NF C 17-102",
-                "Missing surge protection coordination",
-                "Equipotential bonding inadequate",
-                "Installation height calculations incorrect",
-                "Early streamer emission timing not verified",
-                "Protection level selection inappropriate",
-                "Missing risk assessment per French requirements",
-                "EMC compliance issues with electronic ESE devices",
-                "Mechanical strength testing not verified",
-                "Current withstand capability not proven",
-                "Protection zone overlap insufficient",
-                "Installation not meeting manufacturer requirements",
-                "Missing periodic testing verification",
-                "Documentation not in French standard format",
-                "System commissioning incomplete"
+                { failure: "ESE efficiency (DT) not verified or inadequate", ref: "NF C 17-102, Section 5.2.2" },
+                { failure: "Protection radius calculation errors", ref: "NF C 17-102, Section 5.2.3, Equation 1" },
+                { failure: "Air terminal not meeting ESE testing requirements", ref: "NF C 17-102, Section 6.1" },
+                { failure: "Down conductor installation non-compliant", ref: "NF C 17-102, Section 5.3" },
+                { failure: "Earth resistance exceeding French standard limits", ref: "NF C 17-102, Section 5.4" },
+                { failure: "ESE device not certified to NF C 17-102", ref: "NF C 17-102, Section 4.1" },
+                { failure: "Missing surge protection coordination", ref: "NF C 17-102, Section 5.5" },
+                { failure: "Equipotential bonding inadequate", ref: "NF C 17-102, Section 5.4.2" },
+                { failure: "Installation height calculations incorrect", ref: "NF C 17-102, Section 5.2.3" },
+                { failure: "Early streamer emission timing not verified", ref: "NF C 17-102, Section 6.2.1" },
+                { failure: "Protection level selection inappropriate", ref: "NF C 17-102, Section 5.2.1" },
+                { failure: "Missing risk assessment per French requirements", ref: "NF C 17-102, Section 5.1" },
+                { failure: "EMC compliance issues with electronic ESE devices", ref: "NF C 17-102, Section 6.4" },
+                { failure: "Mechanical strength testing not verified", ref: "NF C 17-102, Section 6.3" },
+                { failure: "Current withstand capability not proven", ref: "NF C 17-102, Section 6.2.2" },
+                { failure: "Protection zone overlap insufficient", ref: "NF C 17-102, Section 5.2.4" },
+                { failure: "Installation not meeting manufacturer requirements", ref: "NF C 17-102, Section 7" },
+                { failure: "Missing periodic testing verification", ref: "NF C 17-102, Section 8" },
+                { failure: "Documentation not in French standard format", ref: "NF C 17-102, Section 9" },
+                { failure: "System commissioning incomplete", ref: "NF C 17-102, Section 7.1" }
             ]
         };
 
         let selectedFailuresList = [];
         let earthResistances = [];
         let uploadedImages = {};
+        let systemDetails = {};
 
         // Set today's date as default
         document.getElementById('testDate').valueAsDate = new Date();
@@ -605,6 +769,43 @@
         function toggleCollapsible(id) {
             const content = document.getElementById(id);
             content.classList.toggle('active');
+        }
+
+        function selectSystemDetail(category, value, element, isOther = false) {
+            if (!systemDetails[category]) {
+                systemDetails[category] = [];
+            }
+            
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                systemDetails[category] = systemDetails[category].filter(item => item !== value);
+                
+                if (isOther) {
+                    document.getElementById(category + 'Other').classList.add('hidden');
+                    document.getElementById(category + 'Other').value = '';
+                }
+            } else {
+                element.classList.add('selected');
+                if (!systemDetails[category].includes(value)) {
+                    systemDetails[category].push(value);
+                }
+                
+                if (isOther) {
+                    document.getElementById(category + 'Other').classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateOtherValue(category, value) {
+            if (!systemDetails[category]) {
+                systemDetails[category] = [];
+            }
+            
+            systemDetails[category] = systemDetails[category].filter(item => !item.startsWith('Other:'));
+            
+            if (value.trim()) {
+                systemDetails[category].push('Other: ' + value.trim());
+            }
         }
 
         function updateFailuresList() {
@@ -616,11 +817,11 @@
                 container.classList.remove('hidden');
                 failuresList.innerHTML = '';
                 
-                standardFailures[standard].forEach((failure, index) => {
+                standardFailures[standard].forEach((failureObj, index) => {
                     const failureDiv = document.createElement('div');
                     failureDiv.className = 'failure-option';
-                    failureDiv.textContent = failure;
-                    failureDiv.onclick = () => selectFailure(failure, failureDiv);
+                    failureDiv.textContent = failureObj.failure;
+                    failureDiv.onclick = () => selectFailure(failureObj, failureDiv);
                     failuresList.appendChild(failureDiv);
                 });
             } else {
@@ -628,14 +829,15 @@
             }
         }
 
-        function selectFailure(failure, element) {
+        function selectFailure(failureObj, element) {
             if (element.classList.contains('selected')) {
                 element.classList.remove('selected');
-                selectedFailuresList = selectedFailuresList.filter(f => f.failure !== failure);
+                selectedFailuresList = selectedFailuresList.filter(f => f.failure !== failureObj.failure);
             } else {
                 element.classList.add('selected');
                 selectedFailuresList.push({
-                    failure: failure,
+                    failure: failureObj.failure,
+                    reference: failureObj.ref,
                     comment: '',
                     image: null
                 });
@@ -652,6 +854,7 @@
                 failureDiv.className = 'failure-item';
                 failureDiv.innerHTML = `
                     <h4>${item.failure}</h4>
+                    <div style="font-size: 12px; color: #6c757d; margin: 5px 0; font-style: italic;">${item.reference}</div>
                     <div class="form-group">
                         <label>Comment:</label>
                         <textarea onchange="updateFailureComment(${index}, this.value)" placeholder="Add detailed comments about this failure...">${item.comment}</textarea>
@@ -677,7 +880,6 @@
                 const file = input.files[0];
                 selectedFailuresList[index].image = file;
                 
-                // Read the image data
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     selectedFailuresList[index].imageData = e.target.result;
@@ -694,7 +896,7 @@
             
             if (numEarths > 0) {
                 container.style.display = 'block';
-                container.innerHTML = '<h4>Enter Earth Resistance Values (Ω):</h4>';
+                container.innerHTML = '<h4>Enter Earth Resistance Values (Ohm):</h4>';
                 
                 for (let i = 1; i <= numEarths; i++) {
                     const inputGroup = document.createElement('div');
@@ -702,7 +904,7 @@
                     inputGroup.innerHTML = `
                         <label>Earth ${i}:</label>
                         <input type="number" step="0.01" min="0" onchange="updateEarthResistance(${i-1}, this.value)" placeholder="0.00">
-                        <span>Ω</span>
+                        <span>Ohm</span>
                     `;
                     container.appendChild(inputGroup);
                 }
@@ -720,14 +922,13 @@
 
         function calculateOverallResistance() {
             if (earthResistances.length > 0 && earthResistances.some(r => r > 0)) {
-                // Parallel resistance formula: 1/RT = 1/R1 + 1/R2 + ... + 1/Rn
                 const validResistances = earthResistances.filter(r => r > 0);
                 const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
                 const overallResistance = 1 / reciprocalSum;
                 
                 document.getElementById('earthResult').classList.remove('hidden');
                 document.getElementById('overallResistance').innerHTML = `
-                    <strong>${overallResistance.toFixed(3)} Ω</strong>
+                    <strong>${overallResistance.toFixed(3)} Ohm</strong>
                     <br><small>Calculated from ${validResistances.length} earth electrode(s)</small>
                 `;
             } else {
@@ -740,7 +941,6 @@
                 const file = input.files[0];
                 uploadedImages[previewId] = file;
                 
-                // Create a FileReader to read the image
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     uploadedImages[previewId + '_data'] = e.target.result;
@@ -757,7 +957,6 @@
                 uploadedImages[previewId] = files;
                 uploadedImages[previewId + '_data'] = [];
                 
-                // Read all files
                 files.forEach((file, index) => {
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -773,12 +972,9 @@
         function addImageToPDF(pdf, imageData, x, y, maxWidth, maxHeight) {
             if (imageData) {
                 try {
-                    // Determine image format
                     const format = imageData.includes('data:image/jpeg') ? 'JPEG' : 'PNG';
-                    
-                    // Add image to PDF with size constraints
                     pdf.addImage(imageData, format, x, y, maxWidth, maxHeight);
-                    return maxHeight + 10; // Return height used plus margin
+                    return maxHeight + 10;
                 } catch (error) {
                     console.error('Error adding image to PDF:', error);
                     return 0;
@@ -786,13 +982,34 @@
             }
             return 0;
         }
-
         function generatePDF() {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
             
-            // Company footer
             const footer = "Strike Point Lightning Protection Ltd Registered office: Atkinson Evans, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 01159903220";
+            
+            // Helper function to check and add new page if needed
+            function checkNewPage(currentY, threshold = 250) {
+                if (currentY > threshold) {
+                    // Add footer to current page
+                    const currentPage = pdf.internal.getNumberOfPages();
+                    pdf.setPage(currentPage);
+                    pdf.setFontSize(8);
+                    const footerLines = pdf.splitTextToSize(footer, 190);
+                    pdf.text(footerLines, 105, 280, { align: 'center' });
+                    
+                    // Add new page
+                    pdf.addPage();
+                    
+                    // Add header logo to new page
+                    if (uploadedImages['headerLogoPreview_data']) {
+                        addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                    }
+                    
+                    return 30; // Return new Y position for new page
+                }
+                return currentY;
+            }
             
             // Get form data
             const siteAddress = document.getElementById('siteAddress').value;
@@ -800,16 +1017,23 @@
             const engineerName = document.getElementById('engineerName').value;
             const testKitRef = document.getElementById('testKitRef').value;
             const standard = document.getElementById('standard').value;
-            const surgeInstalled = document.getElementById('surgeInstalled').value;
-            const surgeType = document.getElementById('surgeType').value;
-            const surgeSafe = document.getElementById('surgeSafe').value;
             const generalComments = document.getElementById('generalComments').value;
             const finalComments = document.getElementById('finalComments').value;
             
+            // Get structure details
+            const structureHeight = document.getElementById('structureHeight').value;
+            const structurePerimeter = document.getElementById('structurePerimeter').value;
+            
+            // Get system details dropdowns
+            const earthPits = document.getElementById('earthPits').value;
+            const mainEquipotentialBond = document.getElementById('mainEquipotentialBond').value;
+            const surgeInstalled = document.getElementById('surgeInstalled').value;
+            const surgeType = document.getElementById('surgeType').value;
+            const surgeSafe = document.getElementById('surgeSafe').value;
+            
             let yPosition = 20;
             
-            // Page 1 - Cover Page
-            // Add cover logo if uploaded
+            // Page 1 - Cover Page (No changes needed)
             if (uploadedImages['coverLogoPreview_data']) {
                 const logoHeight = addImageToPDF(pdf, uploadedImages['coverLogoPreview_data'], 60, 20, 90, 40);
                 yPosition = 70;
@@ -822,13 +1046,11 @@
             pdf.text('Lightning Protection System Report', 105, yPosition, { align: 'center' });
             yPosition += 30;
             
-            // Building image (if uploaded)
             if (uploadedImages['buildingImagePreview_data']) {
                 const imageHeight = addImageToPDF(pdf, uploadedImages['buildingImagePreview_data'], 30, yPosition, 150, 100);
                 yPosition += imageHeight + 20;
             }
             
-            // Site details
             pdf.setFontSize(14);
             pdf.setFont(undefined, 'bold');
             pdf.text('Site Details:', 105, yPosition, { align: 'center' });
@@ -837,69 +1059,84 @@
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'normal');
             const details = [
-                `Site Address: ${siteAddress}`,
-                `Date: ${testDate}`,
-                `Engineer: ${engineerName}`,
-                `Test Kit Reference: ${testKitRef}`
+                'Site Address: ' + siteAddress,
+                'Date: ' + testDate,
+                'Engineer: ' + engineerName,
+                'Test Kit Reference: ' + testKitRef
             ];
             
             details.forEach((detail, index) => {
                 pdf.text(detail, 105, yPosition + (index * 10), { align: 'center' });
             });
             
-            // Page 2 - Report
+            // START INSPECTION SUMMARY SECTION
             pdf.addPage();
             yPosition = 20;
             
-            // Add header logo if uploaded
             if (uploadedImages['headerLogoPreview_data']) {
                 addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
             }
             
-            // Summary
             pdf.setFontSize(16);
             pdf.setFont(undefined, 'bold');
             pdf.text('INSPECTION SUMMARY', 20, yPosition);
             yPosition += 15;
             
-            // Pass/Fail determination
             const hasFaults = selectedFailuresList.length > 0;
             pdf.setFontSize(14);
             if (hasFaults) {
-                pdf.setTextColor(220, 20, 60); // Red
+                pdf.setTextColor(220, 20, 60);
                 pdf.text('RESULT: FAIL', 20, yPosition);
             } else {
-                pdf.setTextColor(34, 139, 34); // Green
+                pdf.setTextColor(34, 139, 34);
                 pdf.text('RESULT: PASS', 20, yPosition);
             }
-            pdf.setTextColor(0, 0, 0); // Reset to black
+            pdf.setTextColor(0, 0, 0);
             yPosition += 20;
             
-            // Standard used
             pdf.setFontSize(12);
             pdf.setFont(undefined, 'bold');
-            pdf.text(`Standard Applied: ${standard}`, 20, yPosition);
+            pdf.text('Standard Applied: ' + standard, 20, yPosition);
             yPosition += 15;
             
-            // Findings
             if (selectedFailuresList.length > 0) {
                 pdf.setFont(undefined, 'bold');
                 pdf.text('FINDINGS:', 20, yPosition);
                 yPosition += 10;
                 
                 selectedFailuresList.forEach((failure, index) => {
+                    // Check if we need a new page before adding failure
+                    yPosition = checkNewPage(yPosition, 220);
+                    
                     pdf.setFont(undefined, 'bold');
-                    pdf.text(`${index + 1}. ${failure.failure}`, 20, yPosition);
+                    pdf.text((index + 1) + '. ' + failure.failure, 20, yPosition);
                     yPosition += 8;
+                    
+                    pdf.setFont(undefined, 'italic');
+                    pdf.setFontSize(10);
+                    pdf.text('Reference: ' + failure.reference, 25, yPosition);
+                    yPosition += 8;
+                    pdf.setFontSize(12);
                     
                     if (failure.comment) {
                         pdf.setFont(undefined, 'normal');
-                        const commentLines = pdf.splitTextToSize(`Comment: ${failure.comment}`, 170);
+                        const commentLines = pdf.splitTextToSize('Comment: ' + failure.comment, 170);
+                        
+                        // Check if comment will fit on current page
+                        if (yPosition + (commentLines.length * 5) > 240) {
+                            yPosition = checkNewPage(yPosition);
+                        }
+                        
                         pdf.text(commentLines, 25, yPosition);
                         yPosition += commentLines.length * 5;
                     }
                     
                     if (failure.imageData) {
+                        // Check if image will fit on current page
+                        if (yPosition + 70 > 240) {
+                            yPosition = checkNewPage(yPosition);
+                        }
+                        
                         pdf.setFont(undefined, 'italic');
                         pdf.text('Image:', 25, yPosition);
                         yPosition += 8;
@@ -908,23 +1145,6 @@
                     }
                     
                     yPosition += 5;
-                    
-                    // Add new page if needed
-                    if (yPosition > 250) {
-                        pdf.addPage();
-                        yPosition = 20;
-                        // Add footer to previous page
-                        pdf.setPage(pdf.internal.getNumberOfPages() - 1);
-                        pdf.setFontSize(8);
-                        const footerLines = pdf.splitTextToSize(footer, 190);
-                        pdf.text(footerLines, 105, 280, { align: 'center' });
-                        pdf.setPage(pdf.internal.getNumberOfPages());
-                        
-                        // Add header logo to new page
-                        if (uploadedImages['headerLogoPreview_data']) {
-                            addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
-                        }
-                    }
                 });
             } else {
                 pdf.setFont(undefined, 'normal');
@@ -932,610 +1152,179 @@
                 yPosition += 10;
             }
             
-            // Surge Protection Details
-            yPosition += 10;
-            pdf.setFont(undefined, 'bold');
-            pdf.text('SURGE PROTECTION:', 20, yPosition);
-            yPosition += 10;
-            
-            pdf.setFont(undefined, 'normal');
-            pdf.text(`Installed: ${surgeInstalled}`, 20, yPosition);
-            yPosition += 8;
-            if (surgeInstalled === 'Yes') {
-                pdf.text(`Type: ${surgeType}`, 20, yPosition);
-                yPosition += 8;
-                pdf.text(`Status: ${surgeSafe}`, 20, yPosition);
-                yPosition += 8;
-            }
-            
-            // General Comments
             if (generalComments) {
+                // Check if comments section will fit
+                const commentLines = pdf.splitTextToSize(generalComments, 170);
+                if (yPosition + 20 + (commentLines.length * 5) > 250) {
+                    yPosition = checkNewPage(yPosition);
+                }
+                
                 yPosition += 10;
                 pdf.setFont(undefined, 'bold');
                 pdf.text('GENERAL COMMENTS:', 20, yPosition);
                 yPosition += 10;
                 
                 pdf.setFont(undefined, 'normal');
-                const commentLines = pdf.splitTextToSize(generalComments, 170);
                 pdf.text(commentLines, 20, yPosition);
                 yPosition += commentLines.length * 5 + 10;
             }
             
-            // Page 3 - Earth Resistance Testing
+            // START STRUCTURE AND SYSTEM DETAILS SECTION
             pdf.addPage();
             yPosition = 20;
             
-            // Add header logo
             if (uploadedImages['headerLogoPreview_data']) {
                 addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
             }
             
             pdf.setFontSize(16);
             pdf.setFont(undefined, 'bold');
-            pdf.text('EARTH RESISTANCE TESTING', 20, yPosition);
-            yPosition += 15;
+            pdf.text('STRUCTURE AND SYSTEM DETAILS', 105, yPosition, { align: 'center' });
+            yPosition += 20;
             
-            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
-            if (numEarths > 0) {
-                pdf.setFontSize(12);
+            // Two column layout
+            const leftColumn = 20;
+            const rightColumn = 110;
+            const columnWidth = 80;
+            
+            // Left Column - Structure Details
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('STRUCTURE DETAILS', leftColumn, yPosition);
+            let leftY = yPosition + 10;
+            
+            pdf.setFontSize(10);
+            pdf.setFont(undefined, 'normal');
+            
+            // Structure measurements
+            if (structureHeight) {
                 pdf.setFont(undefined, 'bold');
-                pdf.text('Individual Earth Readings:', 20, yPosition);
-                yPosition += 10;
-                
+                pdf.text('Structure Height:', leftColumn, leftY);
                 pdf.setFont(undefined, 'normal');
-                earthResistances.forEach((resistance, index) => {
-                    pdf.text(`Earth ${index + 1}: ${resistance.toFixed(2)} Ω`, 20, yPosition);
-                    yPosition += 8;
-                });
-                
-                // Overall resistance
-                if (earthResistances.some(r => r > 0)) {
-                    const validResistances = earthResistances.filter(r => r > 0);
-                    const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
-                    const overallResistance = 1 / reciprocalSum;
-                    
-                    yPosition += 10;
+                pdf.text(structureHeight + ' m', leftColumn, leftY + 5);
+                leftY += 12;
+            }
+            
+            if (structurePerimeter) {
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Structure Perimeter:', leftColumn, leftY);
+                pdf.setFont(undefined, 'normal');
+                pdf.text(structurePerimeter + ' m', leftColumn, leftY + 5);
+                leftY += 12;
+            }
+            
+            // Structure questions
+            const structureQuestions = [
+                { key: 'groundType', label: 'Ground Type' },
+                { key: 'wallType', label: 'Structure Wall Type' },
+                { key: 'roofType', label: 'Roof Type' },
+                { key: 'roofStructure', label: 'Roof Structure' }
+            ];
+            
+            structureQuestions.forEach(question => {
+                if (systemDetails[question.key] && systemDetails[question.key].length > 0) {
                     pdf.setFont(undefined, 'bold');
-                    pdf.text(`Overall System Resistance: ${overallResistance.toFixed(3)} Ω`, 20, yPosition);
-                    yPosition += 10;
-                    
-                    // Compliance check
+                    pdf.text(question.label + ':', leftColumn, leftY);
+                    leftY += 5;
                     pdf.setFont(undefined, 'normal');
-                    if (overallResistance <= 10) {
-                        pdf.setTextColor(34, 139, 34); // Green
-                        pdf.text('✓ Complies with 10Ω requirement', 20, yPosition);
-                    } else {
-                        pdf.setTextColor(220, 20, 60); // Red
-                        pdf.text('✗ Exceeds 10Ω requirement - FAIL', 20, yPosition);
-                    }
-                    pdf.setTextColor(0, 0, 0); // Reset to black
-                    yPosition += 15;
+                    
+                    const answers = systemDetails[question.key].join(', ');
+                    const answerLines = pdf.splitTextToSize(answers, columnWidth);
+                    pdf.text(answerLines, leftColumn, leftY);
+                    leftY += answerLines.length * 4 + 8;
                 }
-                
-                // Earth test images
-                if (uploadedImages['earthImagesPreview_data']) {
+            });
+            
+            // Right Column - System Details
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('SYSTEM DETAILS', rightColumn, yPosition);
+            let rightY = yPosition + 10;
+            
+            pdf.setFontSize(10);
+            pdf.setFont(undefined, 'normal');
+            
+            // System questions
+            const systemQuestions = [
+                { key: 'airTermination', label: 'Air-Termination Type' },
+                { key: 'atConductors', label: 'AT Conductors' },
+                { key: 'downConductorType', label: 'Down Conductor Type' },
+                { key: 'dcConductors', label: 'DC Conductors' }
+            ];
+            
+            systemQuestions.forEach(question => {
+                if (systemDetails[question.key] && systemDetails[question.key].length > 0) {
                     pdf.setFont(undefined, 'bold');
-                    pdf.text('Earth Test Images:', 20, yPosition);
-                    yPosition += 10;
+                    pdf.text(question.label + ':', rightColumn, rightY);
+                    rightY += 5;
+                    pdf.setFont(undefined, 'normal');
                     
-                    const images = Array.isArray(uploadedImages['earthImagesPreview_data']) ? 
-                        uploadedImages['earthImagesPreview_data'] : [uploadedImages['earthImagesPreview_data']];
-                    
-                    images.forEach((imageData, index) => {
-                        if (imageData && yPosition < 230) {
-                            const imageHeight = addImageToPDF(pdf, imageData, 20, yPosition, 80, 60);
-                            yPosition += imageHeight + 5;
-                            
-                            // Add new page if needed
-                            if (yPosition > 230 && index < images.length - 1) {
-                                pdf.addPage();
-                                yPosition = 20;
-                                if (uploadedImages['headerLogoPreview_data']) {
-                                    addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
-                                }
-                            }
-                        }
-                    });
+                    const answers = systemDetails[question.key].join(', ');
+                    const answerLines = pdf.splitTextToSize(answers, columnWidth);
+                    pdf.text(answerLines, rightColumn, rightY);
+                    rightY += answerLines.length * 4 + 8;
                 }
-            } else {
-                pdf.setFont(undefined, 'normal');
-                pdf.text('No earth resistance testing performed.', 20, yPosition);
-                yPosition += 15;
-            }
+            });
             
-            // Final Comments
-            if (finalComments) {
-                yPosition += 10;
+            // Dropdown questions
+            if (earthPits) {
                 pdf.setFont(undefined, 'bold');
-                pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
-                yPosition += 10;
-                
+                pdf.text('Earth Pits:', rightColumn, rightY);
                 pdf.setFont(undefined, 'normal');
-                const finalLines = pdf.splitTextToSize(finalComments, 170);
-                pdf.text(finalLines, 20, yPosition);
+                pdf.text(earthPits, rightColumn, rightY + 5);
+                rightY += 12;
             }
             
-            // Add footer to all pages except cover page
-            const totalPages = pdf.internal.getNumberOfPages();
-            for (let i = 2; i <= totalPages; i++) {
-                pdf.setPage(i);
-                pdf.setFontSize(8);
-                const footerLines = pdf.splitTextToSize(footer, 190);
-                pdf.text(footerLines, 105, 280, { align: 'center' });
+            if (mainEquipotentialBond) {
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Main Equipotential Bond:', rightColumn, rightY);
+                pdf.setFont(undefined, 'normal');
+                pdf.text(mainEquipotentialBond, rightColumn, rightY + 5);
+                rightY += 12;
+            }
+            
+            // Surge Protection
+            if (surgeInstalled) {
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Surge Protection Installed:', rightColumn, rightY);
+                pdf.setFont(undefined, 'normal');
+                pdf.text(surgeInstalled, rightColumn, rightY + 5);
+                rightY += 12;
                 
-                // Add header logo to each page if not already added
+                if (surgeInstalled === 'Yes' && surgeType) {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Surge Protection Type:', rightColumn, rightY);
+                    pdf.setFont(undefined, 'normal');
+                    pdf.text(surgeType, rightColumn, rightY + 5);
+                    rightY += 12;
+                }
+                
+                if (surgeInstalled === 'Yes' && surgeSafe) {
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Surge Protection Status:', rightColumn, rightY);
+                    pdf.setFont(undefined, 'normal');
+                    pdf.text(surgeSafe, rightColumn, rightY + 5);
+                    rightY += 12;
+                }
+            }
+            
+            // Check if either column needs a new page
+            const maxY = Math.max(leftY, rightY);
+            if (maxY > 250) {
+                pdf.addPage();
+                yPosition = 20;
+                
                 if (uploadedImages['headerLogoPreview_data']) {
                     addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
                 }
-            }
-            
-            // Generate filename
-            const date = new Date().toISOString().split('T')[0];
-            const filename = `Lightning_Protection_Report_${date}.pdf`;
-            
-            // Save the PDF
-            pdf.save(filename);
-        }
-    </script></script>
-    <script>
-        // Comprehensive failure definitions by standard
-        const standardFailures = {
-            "BS EN 62305": [
-                "Earth resistance exceeds 10Ω requirement",
-                "Poor continuity between air terminals and down conductors",
-                "Air terminals not meeting LPL requirements",
-                "Down conductors not following shortest route to earth",
-                "Inadequate separation distance from metalwork",
-                "Missing equipotential bonding connections",
-                "Non-compliant conductor materials or dimensions",
-                "Earth termination system Type A/B non-compliance",
-                "Missing or inadequate surge protection devices",
-                "SPD coordination issues between protection levels",
-                "Insufficient lightning protection zones implementation",
-                "Risk assessment not conducted or outdated",
-                "Missing bonds to external metalwork",
-                "Corrosion exceeding acceptable limits",
-                "Mechanical damage to system components",
-                "Installation not meeting Class I/II/III/IV requirements",
-                "Missing test clamps or inspection facilities",
-                "Documentation incomplete or missing",
-                "Non-compliance with manufacturer specifications",
-                "Environmental protection inadequate"
-            ],
-            "BS 6651": [
-                "Earth electrode resistance above 10Ω",
-                "Continuity failure in conductor network",
-                "Air terminal spacing exceeds 20m/25m limits",
-                "Down conductor route not direct to earth",
-                "Missing side-flash protection bonds",
-                "Conductor cross-sectional area insufficient",
-                "Earth electrode depth/installation inadequate",
-                "Joint resistance exceeding 0.05Ω",
-                "Missing surge diverter protection",
-                "Corrosion affecting system integrity",
-                "Mechanical protection inadequate",
-                "Test facilities not provided",
-                "Risk factor calculation not meeting 10⁻⁵ limit",
-                "Material specifications non-compliant",
-                "Missing bonds to metallic services",
-                "Down conductor count insufficient for building size",
-                "Air terminal height inadequate for protection",
-                "Missing isolation joints where required",
-                "Installation records incomplete",
-                "Maintenance schedule not followed"
-            ],
-            "CP 326": [
-                "Non-compliance with basic protection principles",
-                "Inadequate conductor sizing for historic requirements",
-                "Missing earth connections",
-                "Poor workmanship in installations",
-                "Material degradation beyond acceptable limits",
-                "Insufficient protection coverage",
-                "Missing documentation from original installation",
-                "Non-standard component usage",
-                "Inadequate maintenance records",
-                "System modifications without proper design review"
-            ],
-            "NF C 17-102": [
-                "ESE efficiency (ΔT) not verified or inadequate",
-                "Protection radius calculation errors",
-                "Air terminal not meeting ESE testing requirements",
-                "Down conductor installation non-compliant",
-                "Earth resistance exceeding French standard limits",
-                "ESE device not certified to NF C 17-102",
-                "Missing surge protection coordination",
-                "Equipotential bonding inadequate",
-                "Installation height calculations incorrect",
-                "Early streamer emission timing not verified",
-                "Protection level selection inappropriate",
-                "Missing risk assessment per French requirements",
-                "EMC compliance issues with electronic ESE devices",
-                "Mechanical strength testing not verified",
-                "Current withstand capability not proven",
-                "Protection zone overlap insufficient",
-                "Installation not meeting manufacturer requirements",
-                "Missing periodic testing verification",
-                "Documentation not in French standard format",
-                "System commissioning incomplete"
-            ]
-        };
-
-        let selectedFailuresList = [];
-        let earthResistances = [];
-        let uploadedImages = {};
-
-        // Set today's date as default
-        document.getElementById('testDate').valueAsDate = new Date();
-
-        function toggleCollapsible(id) {
-            const content = document.getElementById(id);
-            content.classList.toggle('active');
-        }
-
-        function updateFailuresList() {
-            const standard = document.getElementById('standard').value;
-            const container = document.getElementById('failuresContainer');
-            const failuresList = document.getElementById('failuresList');
-            
-            if (standard && standardFailures[standard]) {
-                container.classList.remove('hidden');
-                failuresList.innerHTML = '';
                 
-                standardFailures[standard].forEach((failure, index) => {
-                    const failureDiv = document.createElement('div');
-                    failureDiv.className = 'failure-option';
-                    failureDiv.textContent = failure;
-                    failureDiv.onclick = () => selectFailure(failure, failureDiv);
-                    failuresList.appendChild(failureDiv);
-                });
-            } else {
-                container.classList.add('hidden');
-            }
-        }
-
-        function selectFailure(failure, element) {
-            if (element.classList.contains('selected')) {
-                element.classList.remove('selected');
-                selectedFailuresList = selectedFailuresList.filter(f => f.failure !== failure);
-            } else {
-                element.classList.add('selected');
-                selectedFailuresList.push({
-                    failure: failure,
-                    comment: '',
-                    image: null
-                });
-            }
-            updateSelectedFailures();
-        }
-
-        function updateSelectedFailures() {
-            const container = document.getElementById('selectedFailures');
-            container.innerHTML = '';
-            
-            selectedFailuresList.forEach((item, index) => {
-                const failureDiv = document.createElement('div');
-                failureDiv.className = 'failure-item';
-                failureDiv.innerHTML = `
-                    <h4>${item.failure}</h4>
-                    <div class="form-group">
-                        <label>Comment:</label>
-                        <textarea onchange="updateFailureComment(${index}, this.value)" placeholder="Add detailed comments about this failure...">${item.comment}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Image:</label>
-                        <div class="image-upload" onclick="document.getElementById('failureImage${index}').click()">
-                            <input type="file" id="failureImage${index}" accept="image/*" style="display: none;" onchange="handleFailureImage(${index}, this)">
-                            <div id="failureImagePreview${index}">${item.image ? 'Image uploaded' : 'Click to upload image'}</div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(failureDiv);
-            });
-        }
-
-        function updateFailureComment(index, comment) {
-            selectedFailuresList[index].comment = comment;
-        }
-
-        function handleFailureImage(index, input) {
-            if (input.files[0]) {
-                selectedFailuresList[index].image = input.files[0];
-                document.getElementById(`failureImagePreview${index}`).textContent = 'Image uploaded';
-            }
-        }
-
-        function generateEarthInputs() {
-            const numEarths = parseInt(document.getElementById('numEarths').value) || 0;
-            const container = document.getElementById('earthInputs');
-            
-            if (numEarths > 0) {
-                container.style.display = 'block';
-                container.innerHTML = '<h4>Enter Earth Resistance Values (Ω):</h4>';
-                
-                for (let i = 1; i <= numEarths; i++) {
-                    const inputGroup = document.createElement('div');
-                    inputGroup.className = 'earth-input-group';
-                    inputGroup.innerHTML = `
-                        <label>Earth ${i}:</label>
-                        <input type="number" step="0.01" min="0" onchange="updateEarthResistance(${i-1}, this.value)" placeholder="0.00">
-                        <span>Ω</span>
-                    `;
-                    container.appendChild(inputGroup);
-                }
-                earthResistances = new Array(numEarths).fill(0);
-            } else {
-                container.style.display = 'none';
-                document.getElementById('earthResult').classList.add('hidden');
-            }
-        }
-
-        function updateEarthResistance(index, value) {
-            earthResistances[index] = parseFloat(value) || 0;
-            calculateOverallResistance();
-        }
-
-        function calculateOverallResistance() {
-            if (earthResistances.length > 0 && earthResistances.some(r => r > 0)) {
-                // Parallel resistance formula: 1/RT = 1/R1 + 1/R2 + ... + 1/Rn
-                const validResistances = earthResistances.filter(r => r > 0);
-                const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
-                const overallResistance = 1 / reciprocalSum;
-                
-                document.getElementById('earthResult').classList.remove('hidden');
-                document.getElementById('overallResistance').innerHTML = `
-                    <strong>${overallResistance.toFixed(3)} Ω</strong>
-                    <br><small>Calculated from ${validResistances.length} earth electrode(s)</small>
-                `;
-            } else {
-                document.getElementById('earthResult').classList.add('hidden');
-            }
-        }
-
-        function handleImageUpload(input, previewId) {
-            if (input.files[0]) {
-                const file = input.files[0];
-                uploadedImages[previewId] = file;
-                
-                // Create a FileReader to read the image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImages[previewId + '_data'] = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                document.getElementById(previewId).textContent = 'Image uploaded successfully';
-            }
-        }
-
-        function handleMultipleImageUpload(input, previewId) {
-            if (input.files.length > 0) {
-                const files = Array.from(input.files);
-                uploadedImages[previewId] = files;
-                uploadedImages[previewId + '_data'] = [];
-                
-                // Read all files
-                files.forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        uploadedImages[previewId + '_data'][index] = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                });
-                
-                document.getElementById(previewId).textContent = `${input.files.length} image(s) uploaded`;
-            }
-        }
-
-        function handleFailureImage(index, input) {
-            if (input.files[0]) {
-                const file = input.files[0];
-                selectedFailuresList[index].image = file;
-                
-                // Read the image data
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedFailuresList[index].imageData = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                
-                document.getElementById(`failureImagePreview${index}`).textContent = 'Image uploaded';
-            }
-        }
-
-        function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            
-            // Company footer
-            const footer = "Strike Point Lightning Protection Ltd Registered office: Atkinson Evans, 10 Arnot Hill Road, Nottingham NG5 6LJ. Company No. 15114852, Registered in England and Wales. @: info@strikepoint.uk Tel: 01159903220";
-            
-            // Get form data
-            const siteAddress = document.getElementById('siteAddress').value;
-            const testDate = document.getElementById('testDate').value;
-            const engineerName = document.getElementById('engineerName').value;
-            const testKitRef = document.getElementById('testKitRef').value;
-            const standard = document.getElementById('standard').value;
-            const surgeInstalled = document.getElementById('surgeInstalled').value;
-            const surgeType = document.getElementById('surgeType').value;
-            const surgeSafe = document.getElementById('surgeSafe').value;
-            const generalComments = document.getElementById('generalComments').value;
-            const finalComments = document.getElementById('finalComments').value;
-            
-            let yPosition = 20;
-            
-            // Page 1 - Cover Page
-            // Add cover logo if uploaded
-            if (uploadedImages['coverLogoPreview_data']) {
-                const logoHeight = addImageToPDF(pdf, uploadedImages['coverLogoPreview_data'], 60, 20, 90, 40);
-                yPosition = 70;
-            } else {
-                yPosition = 30;
+                // Continue with any remaining content
             }
             
-            pdf.setFontSize(24);
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Lightning Protection System Report', 105, yPosition, { align: 'center' });
-            yPosition += 30;
-            
-            // Building image (if uploaded)
-            if (uploadedImages['buildingImagePreview_data']) {
-                const imageHeight = addImageToPDF(pdf, uploadedImages['buildingImagePreview_data'], 30, yPosition, 150, 100);
-                yPosition += imageHeight + 20;
-            }
-            
-            // Site details
-            pdf.setFontSize(14);
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Site Details:', 105, yPosition, { align: 'center' });
-            yPosition += 20;
-            
-            pdf.setFontSize(12);
-            pdf.setFont(undefined, 'normal');
-            const details = [
-                `Site Address: ${siteAddress}`,
-                `Date: ${testDate}`,
-                `Engineer: ${engineerName}`,
-                `Test Kit Reference: ${testKitRef}`
-            ];
-            
-            details.forEach((detail, index) => {
-                pdf.text(detail, 105, yPosition + (index * 10), { align: 'center' });
-            });
-            
-            // Page 2 - Report
+            // START EARTH RESISTANCE TESTING SECTION
             pdf.addPage();
             yPosition = 20;
             
-            // Add header logo if uploaded
-            if (uploadedImages['headerLogoPreview_data']) {
-                addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
-            }
-            
-            // Summary
-            pdf.setFontSize(16);
-            pdf.setFont(undefined, 'bold');
-            pdf.text('INSPECTION SUMMARY', 20, yPosition);
-            yPosition += 15;
-            
-            // Pass/Fail determination
-            const hasFaults = selectedFailuresList.length > 0;
-            pdf.setFontSize(14);
-            if (hasFaults) {
-                pdf.setTextColor(220, 20, 60); // Red
-                pdf.text('RESULT: FAIL', 20, yPosition);
-            } else {
-                pdf.setTextColor(34, 139, 34); // Green
-                pdf.text('RESULT: PASS', 20, yPosition);
-            }
-            pdf.setTextColor(0, 0, 0); // Reset to black
-            yPosition += 20;
-            
-            // Standard used
-            pdf.setFontSize(12);
-            pdf.setFont(undefined, 'bold');
-            pdf.text(`Standard Applied: ${standard}`, 20, yPosition);
-            yPosition += 15;
-            
-            // Findings
-            if (selectedFailuresList.length > 0) {
-                pdf.setFont(undefined, 'bold');
-                pdf.text('FINDINGS:', 20, yPosition);
-                yPosition += 10;
-                
-                selectedFailuresList.forEach((failure, index) => {
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text(`${index + 1}. ${failure.failure}`, 20, yPosition);
-                    yPosition += 8;
-                    
-                    if (failure.comment) {
-                        pdf.setFont(undefined, 'normal');
-                        const commentLines = pdf.splitTextToSize(`Comment: ${failure.comment}`, 170);
-                        pdf.text(commentLines, 25, yPosition);
-                        yPosition += commentLines.length * 5;
-                    }
-                    
-                    if (failure.imageData) {
-                        pdf.setFont(undefined, 'italic');
-                        pdf.text('Image:', 25, yPosition);
-                        yPosition += 8;
-                        const imageHeight = addImageToPDF(pdf, failure.imageData, 25, yPosition, 80, 60);
-                        yPosition += imageHeight;
-                    }
-                    
-                    yPosition += 5;
-                    
-                    // Add new page if needed
-                    if (yPosition > 250) {
-                        pdf.addPage();
-                        yPosition = 20;
-                        // Add footer to previous page
-                        pdf.setPage(pdf.internal.getNumberOfPages() - 1);
-                        pdf.setFontSize(8);
-                        const footerLines = pdf.splitTextToSize(footer, 190);
-                        pdf.text(footerLines, 105, 280, { align: 'center' });
-                        pdf.setPage(pdf.internal.getNumberOfPages());
-                        
-                        // Add header logo to new page
-                        if (uploadedImages['headerLogoPreview_data']) {
-                            addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
-                        }
-                    }
-                });
-            } else {
-                pdf.setFont(undefined, 'normal');
-                pdf.text('No earth resistance testing performed.', 20, yPosition);
-                yPosition += 15;
-            }
-            
-            // Final Comments
-            if (finalComments) {
-                yPosition += 10;
-                pdf.setFont(undefined, 'bold');
-                pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
-                yPosition += 10;
-                
-                pdf.setFont(undefined, 'normal');
-                const finalLines = pdf.splitTextToSize(finalComments, 170);
-                pdf.text(finalLines, 20, yPosition);
-            }d, 'normal');
-                pdf.text('No faults identified during inspection.', 20, yPosition);
-                yPosition += 10;
-            }
-            
-            // Surge Protection Details
-            yPosition += 10;
-            pdf.setFont(undefined, 'bold');
-            pdf.text('SURGE PROTECTION:', 20, yPosition);
-            yPosition += 10;
-            
-            pdf.setFont(undefined, 'normal');
-            pdf.text(`Installed: ${surgeInstalled}`, 20, yPosition);
-            yPosition += 8;
-            if (surgeInstalled === 'Yes') {
-                pdf.text(`Type: ${surgeType}`, 20, yPosition);
-                yPosition += 8;
-                pdf.text(`Status: ${surgeSafe}`, 20, yPosition);
-                yPosition += 8;
-            }
-            
-            // General Comments
-            if (generalComments) {
-                yPosition += 10;
-                pdf.setFont(undefined, 'bold');
-                pdf.text('GENERAL COMMENTS:', 20, yPosition);
-                yPosition += 10;
-                
-                pdf.setFont(undefined, 'normal');
-                const commentLines = pdf.splitTextToSize(generalComments, 170);
-                pdf.text(commentLines, 20, yPosition);
-                yPosition += commentLines.length * 5 + 10;
-            }
-            
-            // Page 3 - Earth Resistance Testing
-            pdf.addPage();
-            yPosition = 20;
-            
-            // Add header logo
             if (uploadedImages['headerLogoPreview_data']) {
                 addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
             }
@@ -1554,11 +1343,11 @@
                 
                 pdf.setFont(undefined, 'normal');
                 earthResistances.forEach((resistance, index) => {
-                    pdf.text(`Earth ${index + 1}: ${resistance.toFixed(2)} Ω`, 20, yPosition);
+                    yPosition = checkNewPage(yPosition, 270);
+                    pdf.text('Earth ' + (index + 1) + ': ' + resistance.toFixed(2) + ' Ohm', 20, yPosition);
                     yPosition += 8;
                 });
                 
-                // Overall resistance
                 if (earthResistances.some(r => r > 0)) {
                     const validResistances = earthResistances.filter(r => r > 0);
                     const reciprocalSum = validResistances.reduce((sum, r) => sum + (1/r), 0);
@@ -1566,23 +1355,22 @@
                     
                     yPosition += 10;
                     pdf.setFont(undefined, 'bold');
-                    pdf.text(`Overall System Resistance: ${overallResistance.toFixed(3)} Ω`, 20, yPosition);
+                    pdf.text('Overall System Resistance: ' + overallResistance.toFixed(3) + ' Ohm', 20, yPosition);
                     yPosition += 10;
                     
-                    // Compliance check
                     pdf.setFont(undefined, 'normal');
                     if (overallResistance <= 10) {
-                        pdf.setTextColor(34, 139, 34); // Green
-                        pdf.text('✓ Complies with 10Ω requirement', 20, yPosition);
+                        pdf.setTextColor(34, 139, 34);
+                        pdf.text('✓ Complies with 10 Ohm requirement', 20, yPosition);
                     } else {
-                        pdf.setTextColor(220, 20, 60); // Red
-                        pdf.text('✗ Exceeds 10Ω requirement - FAIL', 20, yPosition);
+                        pdf.setTextColor(220, 20, 60);
+                        pdf.text('✗ Exceeds 10 Ohm requirement - FAIL', 20, yPosition);
                     }
-                    pdf.setTextColor(0, 0, 0); // Reset to black
+                    pdf.setTextColor(0, 0, 0);
                     yPosition += 15;
                 }
                 
-                // Earth test images
+                // Earth test images in two columns
                 if (uploadedImages['earthImagesPreview_data']) {
                     pdf.setFont(undefined, 'bold');
                     pdf.text('Earth Test Images:', 20, yPosition);
@@ -1591,21 +1379,40 @@
                     const images = Array.isArray(uploadedImages['earthImagesPreview_data']) ? 
                         uploadedImages['earthImagesPreview_data'] : [uploadedImages['earthImagesPreview_data']];
                     
+                    let leftColumnY = yPosition;
+                    let rightColumnY = yPosition;
+                    const leftColumnX = 20;
+                    const rightColumnX = 110;
+                    
                     images.forEach((imageData, index) => {
-                        if (imageData && yPosition < 230) {
-                            const imageHeight = addImageToPDF(pdf, imageData, 20, yPosition, 80, 60);
-                            yPosition += imageHeight + 5;
+                        if (imageData) {
+                            const isLeftColumn = index % 2 === 0;
+                            const xPos = isLeftColumn ? leftColumnX : rightColumnX;
+                            let currentY = isLeftColumn ? leftColumnY : rightColumnY;
                             
-                            // Add new page if needed
-                            if (yPosition > 230 && index < images.length - 1) {
+                            // Check if we need a new page
+                            if (currentY > 200) {
                                 pdf.addPage();
-                                yPosition = 20;
+                                leftColumnY = 30;
+                                rightColumnY = 30;
                                 if (uploadedImages['headerLogoPreview_data']) {
                                     addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
                                 }
+                                currentY = isLeftColumn ? leftColumnY : rightColumnY;
+                            }
+                            
+                            const imageHeight = addImageToPDF(pdf, imageData, xPos, currentY, 80, 60);
+                            currentY += imageHeight + 5;
+                            
+                            if (isLeftColumn) {
+                                leftColumnY = currentY;
+                            } else {
+                                rightColumnY = currentY;
                             }
                         }
                     });
+                    
+                    yPosition = Math.max(leftColumnY, rightColumnY) + 10;
                 }
             } else {
                 pdf.setFont(undefined, 'normal');
@@ -1613,18 +1420,25 @@
                 yPosition += 15;
             }
             
-            // Final Comments
             if (finalComments) {
+                // Check if final comments will fit
+                const finalLines = pdf.splitTextToSize(finalComments, 170);
+                if (yPosition + 20 + (finalLines.length * 5) > 250) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    if (uploadedImages['headerLogoPreview_data']) {
+                        addImageToPDF(pdf, uploadedImages['headerLogoPreview_data'], 170, 10, 30, 15);
+                        yPosition = 30;
+                    }
+                }
+                
                 yPosition += 10;
                 pdf.setFont(undefined, 'bold');
                 pdf.text('FINAL SUMMARY & RECOMMENDATIONS:', 20, yPosition);
                 yPosition += 10;
                 
                 pdf.setFont(undefined, 'normal');
-                const finalLines = pdf.splitTextToSize(finalComments, 170);
                 pdf.text(finalLines, 20, yPosition);
-            }d, 'normal');
-                pdf.text('No earth resistance testing performed.', 20, yPosition);
             }
             
             // Add footer to all pages except cover page
@@ -1638,11 +1452,14 @@
             
             // Generate filename
             const date = new Date().toISOString().split('T')[0];
-            const filename = `Lightning_Protection_Report_${date}.pdf`;
+            const filename = 'Lightning_Protection_Report_' + date + '.pdf';
             
             // Save the PDF
             pdf.save(filename);
         }
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
